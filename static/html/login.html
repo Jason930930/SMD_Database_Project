@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}登入 - SMD學習系統{% endblock %}
+
+{% block login_navbar %}{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+    <div class="login-page-wrapper"> {# 頁面整體容器，用於居中 #}
+        <div class="login-card"> {# 卡片式容器 #}
+            <div class="card-header">
+                <h2>會員登入</h2>
+            </div>
+            <div class="card-body">
+                <!-- 是否因未登入進入須登入頁面而轉入login介面 (是的話next存原本要訪問但被拒絕的頁面) -->
+                {% if request.args.get('next') %}
+                    <form action="{{ url_for('login', next=request.args.get('next')) }}" method="POST">
+                {% else %}
+                    <form action="{{ url_for('login') }}" method="POST">
+                {% endif %}
+                    <div class="form-group">
+                        <label for="email">電子郵件 / 帳號</label>
+                         <input type="text" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密碼</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-button">登入</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <p>
+                    <a href="contact-us?subject=忘記密碼">忘記密碼？</a>
+                    <span class="link-separator">|</span>
+                    <a href="{{ url_for('register') }}">立即註冊</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

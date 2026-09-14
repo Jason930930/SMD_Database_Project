@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}設置 - SMD學習系統{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+
+<div class="settings-page-wrapper">
+    <div class="settings-header">
+        <h1>帳戶設置</h1>
+        <p>管理您的個人資訊和偏好設定。</p>
+    </div>
+
+    <div class="settings-sections">
+        <!-- 個人資訊 -->
+        <section class="settings-section">
+            <h2>個人資訊</h2>
+            <form method="POST" action="/settings?type=profile">
+                <div class="form-group avatar-group">
+                    <div class="avatar-preview">
+                        <img id="avatar-img" src="{{ user_data['img'] or url_for('static', filename='resources/user.jpeg') }}" alt="目前大頭照" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">用戶名稱</label>
+                    <input type="text" id="username" name="username" value="{{ user_data['UserName'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" id="email" name="email" value="{{ user_data['email'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="major">系所</label>
+                    <select id="major" name="major" required value="{{ user_data['major'] }}">
+                        <option value="IMF" {% if user_data['major'] == "IMF" %} selected {% endif %}>資訊管理與財務金融學系</option>
+                        <option value="IMF" {% if user_data['major'] == "IMF" %} selected {% endif %}>資財系</option>
+                        <option value="IMF" {% if user_data['major'] == "IMF" %} selected {% endif %}>IMF</option>
+                        <option value="Other" {% if user_data['major'] == "Other" %} selected {% endif %}>其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="grade">年級</label>
+                    <select id="grade" name="grade" required>
+                            <option value="">請選擇</option>
+                        <option value="Freshman"  {% if user_data['grade'] == "Freshman" %} selected {% endif %}>大一</option>
+                        <option value="Sophomore"  {% if user_data['grade'] == "Sophomore" %} selected {% endif %}>大二</option>
+                        <option value="Junior"  {% if user_data['grade'] == "Junior" %} selected {% endif %}>大三</option>
+                        <option value="Senior"  {% if user_data['grade'] == "Senior" %} selected {% endif %}>大四</option>
+                        <option value="Grad1"  {% if user_data['grade'] == "Grad1" %} selected {% endif %}>研究所一年級</option>
+                        <option value="Grad2"  {% if user_data['grade'] == "Grad2" %} selected {% endif %}>研究所二年級</option>
+                        <option value="PhD"  {% if user_data['grade'] == "PhD" %} selected {% endif %}>博士班</option>
+                        <option value="Other"  {% if user_data['grade'] == "Other" %} selected {% endif %}>其他</option>
+                    </select>
+                </div>
+                <button type="submit" class="settings-button">更新資訊</button>
+            </form>
+        </section>
+
+        <!-- 密碼變更 -->
+        <section class="settings-section">
+            <h2>變更密碼</h2>
+            <form method="POST" action="/settings?type=pswd" id="changePasswordForm">
+                <div class="form-group">
+                    <label for="current-password">目前密碼</label>
+                    <input type="password" id="current-password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">新密碼</label>
+                    <input type="password" id="new-password" name="new_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">確認新密碼</label>
+                    <input type="password" id="confirm-password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="settings-button">更新密碼</button>
+            </form>
+        </section>
+
+        <!-- 刪除帳戶 -->
+        <section class="settings-section">
+            <h2>刪除帳戶</h2>
+            <p>刪除帳戶將永久移除您的所有資料，且無法復原。</p>
+            <form method="POST" action="/settings?type=del_account" onsubmit="return confirm('您確定要刪除帳戶嗎？此操作無法復原。')">
+                <button type="submit" class="delete-button">刪除帳戶</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script>
+    const confirmPassword = document.getElementById('confirm-password');
+    const newPassword = document.getElementById('new-password');
+
+    confirmPassword.addEventListener('input', function () {
+        if (confirmPassword.value != newPassword.value) {
+            confirmPassword.style.border = '2px solid red';
+        } else {
+            confirmPassword.style.border = '';
+        }
+    });
+
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+        if (confirmPassword.value != newPassword.value) {
+            event.preventDefault();
+            // 添加紅框樣式
+            confirmPassword.style.border = '2px solid red';
+            alert('目前密碼與新密碼不能相同！');
+        } else {
+            // 移除紅框樣式
+            confirmPassword.style.border = '';
+        }
+    });
+</script>
+{% endblock %}

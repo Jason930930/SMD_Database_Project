@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}學習科目與單元 - SMD學習系統{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sets.css') }}"> {# 引入這個新的 CSS 文件 #}
+
+    <div class="subject-list-container">
+        <div class="content-section">
+            <div class="header-filter-container">
+                <h2>學習科目</h2>
+    
+                <div class="filter-bar">
+                    <div class="filter-indicator"></div>
+
+                    <button class="filter-button active" data-filter="all">所有範圍</button>
+                    <button class="filter-button" data-filter="期中一">期中一</button>
+                    <button class="filter-button" data-filter="期中二">期中二</button>
+                    <button class="filter-button" data-filter="期末">期末</button>
+                </div>
+            </div>
+            <div class="subject-category-list">
+                {% if subjects %} {# 檢查是否有科目資料 #}
+                    {% for subject in subjects %}
+                    <section class="subject-section">
+                        <div class="subject-header">
+                            <h3 class="subject-title">科目：{{ subject.subject_id }}</h3>
+                            <button class="mock-exam-button" data-subject-id="{{ subject.subject_id }}">模擬測驗</button>
+                            <!-- <button class="mock-exam-button" data-subject-id="{{ subject.subject_id }}">單元練習</button> -->
+                            <div class="subject-more-menu-container">
+                                <button class="subject-more-btn" data-subject-id="{{ subject.subject_id }}">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="subject-more-menu" style="display:none;">
+                                    <div class="subject-delete-btn" data-subject-id="{{ subject.subject_id }}">刪除科目</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="unit-horizontal-scroll">
+                            <ul class="unit-list horizontal">
+                                
+                                <!-- 新增單元卡片 -->
+                                <li class="add-unit-block">
+                                    <div class="unit-content">
+                                        <div class="add-unit-placeholder">
+                                            <i class="fas fa-plus-circle"></i> 新增單元
+                                        </div>
+                                        <form class="add-unit-form" style="display:none;">
+                                            <div class="add-unit-row">
+                                                <input type="text" class="add-unit-input" placeholder="名稱" required>
+                                                <select class="add-unit-examtype" required>
+                                                    <option value="" disabled selected>類型</option>
+                                                    <option value="期中一">期中一</option>
+                                                    <option value="期中二">期中二</option>
+                                                    <option value="期末">期末</option>
+                                                </select>
+                                            </div>
+                                            <div class="add-unit-actions">
+                                                <span class="add-unit-cancel">取消</span>
+                                                <span class="add-unit-submit">確定</span>
+                                            </div>
+                                            <div class="add-unit-msg"></div>
+                                        </form>
+                                    </div>    
+                                </li>
+
+                                {% if subject.units %} 
+                                    {% for unit in subject.units %} 
+                                    <li class="unit-item unit-block" data-exam="{{ unit.get('examtype', 'unknown') }}" data-progress="0">
+                                        <div class="unit-content">
+                                            <div class="unit-info">
+                                                <span class="unit-number">單元 :</span>
+                                                <span class="unit-title">{{ unit.chapter_id }}</span>
+                                            </div>
+                                            <div class="unit-meta">
+                                                <span class="unit-type"><i class="fas fa-info-circle"></i>{{ unit.get('examtype', '無類型資訊')}}</span><br>
+                                                <span class="unit-duration"><i class="fas fa-question"></i>{{ unit.get('size')}}</span><br>
+                                                <span class="unit-status status-not-started"><i class="fas fa-dot-circle"></i>未開始</span>
+                                            </div>                    
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>此科目暫無單元。</p>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </section>
+                    {% endfor %}
+
+                    <!-- 新增科目卡片 -->
+                    <div class="subject-section add-subject-card" id="add-subject-card">
+                        <div class="add-subject-placeholder" id="add-subject-placeholder">
+                            <i class="fas fa-plus-circle"></i> 新增科目
+                        </div>
+                        <form id="add-subject-form" class="add-subject-form" style="display:none;">
+                            <input type="text" id="add-subject-input" placeholder="輸入新科目名稱..." required>
+                            <div class="add-subject-actions">
+                                <span id="add-subject-cancel" class="add-subject-cancel">取消</span>
+                                <span id="add-subject-submit" class="add-subject-submit">確定</span>
+                            </div>
+                            <div id="add-subject-msg" class="add-subject-msg"></div>
+                        </form>
+                    </div>
+                
+                {% else %}
+                    <p>無法載入科目資料。</p> 
+                {% endif %}    
+    
+               
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const currentUserId = "{{ current_user.id }}";
+        const subjects = {{ subjects|tojson }};
+    </script>
+    <script src="{{url_for('static' , filename='js/sets.js')}}"></script>
+{% endblock %}

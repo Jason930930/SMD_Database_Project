@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}測驗紀錄 - SMD學習系統{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/test_record.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chapter.css') }}">
+<div class="test-record-container">
+    <h1 class="test-record-title">測驗紀錄</h1>
+    <div id="test-record-list" class="test-record-list"></div>
+</div>
+<script src="{{ url_for('static', filename='js/test_record.js') }}"></script>
+
+<!-- 練習題目 Modal 對話框 - START -->
+<dialog id="practiceQuestionModal"> 
+    <div class="modal-header">
+        <div class="modal-header-left">
+            <h3 id="modalQuestionId">題目 ID: </h3>
+            <span class="modal-star" id="modalStar"><i class="fas fa-star"></i></span>
+        </div>
+        <button id="closePracticeModalBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div id="modalQuestionText"></div>
+        <div id="modalOptions"></div>
+        <div id="modalFeedback" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+    <div class="modal-footer">
+        <button id="prevQuestionBtn">上一題</button>
+        <button id="checkAnswerBtn">顯示答案</button>
+        <button id="nextQuestionBtn">下一題</button>
+    </div>
+</dialog>
+<!-- 練習題目 Modal 對話框 - END -->
+{% endblock %}

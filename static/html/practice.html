@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}單元練習 - SMD學習系統{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{url_for('static' , filename='css/practice.css')}}"> 
+<div class="practice-container">
+    <div class="practice-header">
+        <span id="question-count" class="question-count"></span>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 25%;"></div>
+        </div>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="question-area" id="question-area">
+        <h1>選擇正確的答案：</h1>
+        <p class="question-text" id="question-text">管理學老師是?</p>
+
+        <div class="options-container" id="options-container">
+            <div class="option-card correct">
+                <p>蕭敬騰</p>
+            </div>
+            <div class="option-card incorrect">
+                <p>蝴蝶姊姊</p>
+        </div>
+
+    </div>
+
+    <!-- <div class="practice-footer" id="practice-footer">
+        <button class="last-btn">上一題</button>
+        <button class="next-btn">下一題</button>
+    </div>      -->
+</div>
+<!-- <script>
+    const practiceData = JSON.parse(localStorage.getItem('practice_questions') || '{}');
+</script> -->
+<script src="{{url_for('static' , filename='js/practice.js')}}"></script>
+{% endblock %}

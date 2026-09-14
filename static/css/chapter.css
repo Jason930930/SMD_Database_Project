@@ -1,0 +1,776 @@
+/* --- General Layout & Header Styles --- */
+/* Style for the main content section header */
+.content-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #fff; /* Typically white for dark themes */
+}
+
+/* --- Topic Controls (Sorting and Add Button) --- */
+/* Container for sorting options and the add topic button */
+.topic-controls {
+    display: flex; /* Arrange items horizontally */
+    justify-content: space-between; /* Space out items */
+    align-items: center; /* Vertically align items */
+    margin-bottom: 20px; /* Space below the controls */
+    flex-wrap: wrap; /* Allow items to wrap onto new lines on small screens */
+    gap: 15px; /* Space between flex items */
+}
+
+/* Label for sorting options */
+.sort-options label {
+    font-size: 16px;
+    color: var(--text-color-grey); /* Use a grey variable for labels */
+    margin-right: 10px; /* Space between label and select */
+}
+
+/* Select dropdown for sorting */
+.sort-options select {
+    padding: 8px 10px;
+    border-radius: 5px;
+    background-color: var(--card-bg-color); /* Dark background for input */
+    color: var(--text-color-light); /* Light text color */
+    border: 1px solid #535353; /* Subtle border */
+    font-size: 16px;
+    cursor: pointer;
+    outline: none; /* Remove default focus outline */
+    /* Remove default dropdown arrow and add custom one for consistent appearance */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23B3B3B3%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Position arrow on the right */
+    background-size: 12px;
+    padding-right: 30px; /* Add padding on the right to not overlap the arrow */
+}
+
+/* Focus state for the select dropdown */
+.sort-options select:focus {
+    border-color: var(--accent-color); /* Highlight border on focus */
+}
+
+/* Styles for the "Sort by Star" header */
+.sort-by-star-header {
+    cursor: pointer; /* Indicate clickable */
+    /* Add subtle visual cue */
+    transition: color 0.2s ease;
+}
+
+/* Style for the icon within the active star sort header */
+#sort-by-star-header.active-sort-header i {
+    color: var(--accent-color); /* Highlight color when active */
+}
+
+/* 星號排序標題的樣式 */
+#sort-by-star-header {
+    text-align: center; /* 將內容置中對齊 */
+    width: 40px; /* 確保與下面的星星列寬度一致 */
+    padding: 0; /* 移除多餘的內邊距 */
+}
+
+/* 星號圖標的樣式 */
+#sort-by-star-header i {
+    font-size: 1.5rem; /* 調整星號大小，與下面的星星一致 */
+    color: gray; /* 默認為灰色 */
+    cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+    transition: color 0.3s ease; /* 添加過渡效果 */
+}
+
+/* 星號亮起時的樣式 */
+#sort-by-star-header i.fas {
+    color: green; /* 亮起時為綠色 */
+}
+
+/* 星號懸停時的樣式 */
+#sort-by-star-header i:hover {
+    color: lightgray; /* 懸停時變為淺灰色 */
+}
+
+/* Style for the "Add Topic" button */
+.add-topic-btn {
+    background-color: var(--accent-color); /* Primary button color */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px; /* Rounded button */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex; /* Align icon and text */
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+/* Icon inside the add topic button */
+.add-topic-btn i {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+/* Hover effect for add topic button */
+.add-topic-btn:hover {
+    background-color: #1ed760; /* Lighter green on hover */
+}
+
+/* Style for the "Start Practice" link wrapping a button */
+.practice-unit-btn {
+     /* Assuming this wraps a button to make the whole link clickable */
+     /* If it's just a link styled as a button, remove the button styles below and apply here */
+     text-decoration: none; /* Remove default underline */
+     display: inline-block; /* Treat as a block for padding/margins if needed */
+}
+
+/* Style for the button inside the '開始練習' link */
+.practice-unit-btn button {
+     background-color: var(--accent-color); /* Use accent color */
+     color: #fff;
+     border: none;
+     padding: 10px 20px;
+     border-radius: 20px; /* Rounded button */
+     cursor: pointer;
+     font-size: 16px;
+     font-weight: 600;
+     display: flex; /* Align icon and text */
+     align-items: center;
+     transition: background-color 0.3s ease;
+}
+
+/* Style for the icon inside the practice button */
+.practice-unit-btn button i {
+     margin-right: 8px; /* Space between icon and text */
+}
+
+/* Hover effect for practice button */
+.practice-unit-btn button:hover {
+     background-color: #1ed760; /* Lighter green on hover (consistent with add button) */
+}
+
+/* Active (clicked) state for practice button */
+.practice-unit-btn button:active {
+     /* Use a slightly darker color or a subtle transform effect */
+     background-color: #15a34a; /* Example: slightly darker green */
+     transform: scale(0.98); /* Slight shrink effect */
+}
+
+
+/* --- Topic List Table Styles --- */
+.topic-list table {
+    width: 100%; /* Make table fill its container */
+    border-collapse: collapse; /* Remove space between borders */
+}
+
+/* Styles for table headers (th) and data cells (td) */
+.topic-list th,
+.topic-list td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid #333; /* Separator line */
+}
+
+/* Styles specifically for table headers */
+.topic-list th {
+    font-size: 14px;
+    color: var(--text-color-grey); /* Grey color for headers */
+    text-transform: uppercase; /* Uppercase headers */
+    letter-spacing: 0.5px;
+    /* Ensure star column header has appropriate width and alignment */
+    &.favorite-cell {
+         width: 40px;
+         text-align: center;
+    }
+}
+
+/* Styles specifically for table data cells */
+.topic-list td {
+    font-size: 16px;
+    color: var(--text-color-light); /* Light color for data */
+
+    /* Ensure star icon cell has appropriate width and alignment */
+    &.favorite-cell {
+         width: 40px;
+         text-align: center;
+    }
+}
+
+
+/* Hover effect for table rows */
+.topic-list tbody tr:hover {
+    background-color: #282828; /* Highlight row on hover */
+    cursor: pointer; /* Indicate row is clickable */
+}
+
+/* Styles for links within table data cells */
+.topic-list td a {
+    color: var(--text-color-light); /* Default link color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+    display: block; /* Make the whole cell area clickable for the link */
+    /* Note: If you have multiple interactive elements in a cell (like star and a link), 
+       you might need to adjust this or use separate click handlers on the row vs. elements. 
+       Your JS already handles the star click stopPropagation. */
+}
+
+/* Hover effect for links within table data cells */
+.topic-list td a:hover {
+    color: #fff; /* Lighter color on link hover */
+}
+
+/* Container for answer rate bar, percentage, and star icon within a table cell */
+.answer-rate-info {
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Vertically align items */
+    gap: 8px; /* Space between items */
+}
+
+/* Style for the Answer Rate Bar container */
+.answer-rate-bar {
+    width: 100px; /* Fixed width for the progress bar */
+    height: 10px;
+    background-color: var(--progress-bg); /* Background color of the bar track */
+    border-radius: 4px;
+    overflow: hidden; /* Hide the fill outside the rounded corners */
+    flex-shrink: 0; /* Prevent the bar from shrinking */
+}
+
+/* Style for the Answer Rate Bar fill */
+.answer-rate-fill {
+    height: 100%; /* Make the fill take the full height of the container */
+    background-color: var(--progress-fill); /* Color of the fill */
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out; /* Smooth animation for width changes */
+}
+
+/* Style for the percentage text next to the bar */
+.topic-list td .answer-rate-info > span {
+    font-size: 14px;
+    color: var(--text-color-grey); /* Grey color for the percentage */
+    flex-shrink: 0; /* Prevent the text from shrinking */
+}
+
+/* Style for the individual topic star icon container */
+.topic-favorite {
+    cursor: pointer; /* Indicate interactive */
+    color: var(--text-color-grey); /* Default color (outline star) */
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
+    flex-shrink: 0; /* Prevent the star icon from shrinking */
+    display: inline-block; /* 與題目 ID 同行 */
+}
+
+/* Style for the filled star when the topic is favorited (has 'active' class) */
+.topic-favorite.active {
+    color: var(--accent-color); /* Use accent color for favorited star */
+}
+
+/* Optional: Style on hover for individual star */
+.topic-favorite:hover {
+    color: #fff; /* Lighter color on hover */
+}
+
+/* 星號的基礎樣式 */
+.star-icon i {
+    font-size: 1.5rem; /* 調整星號大小 */
+    color: gray; /* 默認為灰色 */
+    cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+    transition: color 0.3s ease; /* 添加過渡效果 */
+}
+
+/* 星號亮起時的樣式 */
+.star-icon i.fas {
+    color: green; /* 亮起時為綠色 */
+}
+
+/* 星號懸停時的樣式 */
+.star-icon i:hover {
+    color: lightgray; /* 懸停時變為淺灰色 */
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .topic-controls {
+        flex-direction: column; /* Stack controls vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    .topic-list th,
+    .topic-list td {
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+}
+
+
+/* --- Add Topic Dialog Styles --- */
+#addTopicDialog {
+    background-color: var(--card-bg-color); /* Dark background for the dialog */
+    color: var(--text-color-light); /* Light text color */
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 25px 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px; /* Maximum width */
+    margin: auto; /* Helps with centering if not using showModal fully */
+    max-height: 90vh; /* Limit maximum height to prevent overflow */
+    overflow-y: auto; /* Add scrollbar if content exceeds max height */
+    /* showModal() handles centering, but fixed/transform can be alternatives */
+}
+
+/* Styles for the backdrop behind the dialog */
+#addTopicDialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+    /* backdrop-filter: blur(2px); /* Optional: add blur effect */
+}
+
+/* Dialog title styles */
+#addTopicDialog h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.7em;
+    color: #fff;
+    text-align: center;
+}
+
+/* Spacing for form groups (divs) within the form */
+#addTopicForm > div:not(.dialog-actions):not(.topic-options-grid) {
+    margin-bottom: 20px;
+}
+
+/* Styles for form labels */
+#addTopicForm label {
+    display: block; /* Make label take its own line */
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.95em;
+    color: var(--text-color-grey);
+}
+
+/* Styles for text inputs, textareas, and select dropdowns in the form */
+#addTopicForm input[type="text"],
+#addTopicForm textarea,
+#addTopicForm select {
+    width: 100%; /* Make inputs fill container width */
+    padding: 12px 15px;
+    background-color: var(--bg-color-dark); /* Dark input background */
+    color: var(--text-color-light); /* Light text */
+    border: 1px solid #444; /* Border color */
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding/border in the element's total width/height */
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transitions on focus */
+}
+
+/* Focus state for inputs, textareas, and select */
+#addTopicForm input[type="text"]:focus,
+#addTopicForm textarea:focus,
+#addTopicForm select:focus {
+    outline: none;
+    border-color: var(--accent-color); /* Accent color border on focus */
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3); /* Subtle glow effect */
+}
+
+/* Specific styles for textarea */
+#addTopicForm textarea {
+    resize: vertical; /* Allow resizing only vertically */
+    min-height: 80px; /* Minimum height for the question text area */
+}
+
+/* Grid layout for option inputs */
+.topic-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid columns */
+    gap: 15px; /* Space between grid items (options) */
+    margin-bottom: 20px;
+}
+
+/* Container for each individual option input within the grid */
+.topic-options-grid > div {
+    display: flex;
+    flex-direction: column; /* Stack label and input vertically */
+}
+
+/* Styles for the select dropdown specifically (duplicate, keeping the unique arrow styles here) */
+#addTopicForm select {
+    /* These appearance/background styles were duplicated, keeping them here as they are specific to select */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23B3B3B3%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 40px; /* Space for the custom arrow */
+}
+
+/* Styles for options within the select dropdown */
+#addTopicForm select option {
+    background-color: var(--bg-color-dark); /* Dark background for dropdown items */
+    color: var(--text-color-light); /* Light text for dropdown items */
+}
+
+
+/* Container for dialog action buttons */
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 15px; /* Space between buttons */
+    margin-top: 30px;
+}
+
+/* Base styles for buttons within the dialog form */
+#addTopicForm button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions for hover/active */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Hover effect for dialog buttons */
+#addTopicForm button:hover {
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Active (clicked) effect for dialog buttons */
+#addTopicForm button:active {
+    transform: translateY(0px); /* Return to original position */
+}
+
+/* Style for the submit button */
+#addTopicForm button[type="submit"] {
+    background-color: var(--accent-color); /* Accent color for primary action */
+    color: #fff;
+}
+
+/* Hover effect for the submit button */
+#addTopicForm button[type="submit"]:hover {
+    background-color: #1ed760; /* Lighter green on hover */
+}
+
+/* Style for the cancel/secondary button */
+#addTopicForm button[type="button"] {
+    background-color: var(--progress-bg); /* Use a grey color */
+    color: var(--text-color-light);
+}
+
+/* Hover effect for the cancel/secondary button */
+#addTopicForm button[type="button"]:hover {
+    background-color: #636363; /* Darker grey on hover */
+}
+/* --- Add Topic Dialog Styles End --- */
+
+
+/* --- Practice Question Modal Styles --- */
+#practiceQuestionModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    background-color: var(--card-bg-color);
+    color: var(--text-color-light);
+    padding: 30px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    z-index: 1000;
+}
+
+/* 顯示時的樣式 */
+#practiceQuestionModal.show {
+    transform: translate(-50%, -50%) scale(1); /* 放大到正常大小 */
+    opacity: 1; /* 完全顯示 */
+}
+
+/* 隱藏時的樣式 */
+#practiceQuestionModal.hide {
+    transform: translate(-50%, -50%) scale(0.8); /* 縮小 */
+    opacity: 0; /* 淡出 */
+    pointer-events: none; /* 防止點擊事件 */
+}
+
+/* 背景遮罩 */
+#practiceQuestionModal::backdrop {
+    background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+    backdrop-filter: blur(5px); /* 模糊效果 */
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between; /* 左右對齊 */
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 題目 ID 和星號之間的間距 */
+}
+
+.modal-header h3 {
+    margin: 0; /* 移除默認的外邊距 */
+    font-size: 1.8em; /* 調整字體大小 */
+    color: #fff; /* 顏色 */
+}
+
+.modal-star {
+    font-size: 1.5rem; /* 調整星號大小 */
+    color: gray; /* 默認為灰色 */
+    cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+    transition: color 0.3s ease; /* 添加過渡效果 */
+}
+
+.modal-star i.fas {
+    color: green; /* 亮起時為綠色 */
+}
+
+.modal-star i:hover {
+    color: lightgray; /* 懸停時變為淺灰色 */
+}
+
+.modal-header button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: var(--text-color-light);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-header button:hover {
+    color: var(--accent-color);
+}
+
+/* Modal Body */
+.modal-body {
+    text-align: left;
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.modal-body p {
+    margin: 10px 0;
+}
+
+#modalOptions p {
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#modalOptions p:hover {
+    background-color: var(--progress-bg);
+    transform: scale(1.02);
+}
+
+#modalOptions p.correct {
+    background-color: #2d4d2d;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.modal-footer button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-footer button:hover {
+    background-color: #1ed760;
+    transform: scale(1.05);
+}
+
+.modal-footer button:active {
+    transform: scale(0.95);
+}
+
+/* Modal 星號的基礎樣式 */
+#modalStar i {
+    font-size: 2rem; /* 調整星號大小 */
+    color: gray; /* 默認為灰色 */
+    cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+    transition: color 0.3s ease; /* 添加過渡效果 */
+}
+
+/* Modal 星號亮起時的樣式 */
+#modalStar i.fas {
+    color: green; /* 亮起時為綠色 */
+}
+
+/* Modal 星號懸停時的樣式 */
+#modalStar i:hover {
+    color: lightgray; /*懸停時變為淺灰色 */
+}
+
+/* 將 Modal 星號置中 */
+.modal-star {
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    font-size: 2rem; /* 調整星號大小 */
+    cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+    transition: color 0.3s ease; /* 添加過渡效果 */
+}
+
+/* 星號默認樣式 */
+.modal-star i {
+    color: gray; /* 默認為灰色 */
+}
+
+/* 星號亮起時的樣式 */
+.modal-star i.fas {
+    color: green; /* 亮起時為綠色 */
+}
+
+/* 星號懸停時的樣式 */
+.modal-star i:hover {
+    color: lightgray; /* 懸停時變為淺灰色 */
+}
+/* --- Practice Question Modal Styles End --- */
+
+/* 刪除單元 */
+.delete-unit-btn {
+    background: none;
+    border: none;
+    color: #f44336;
+    font-size: 1em;
+    cursor: pointer;
+    margin-left: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: background 0.18s;
+}
+.delete-unit-btn:hover {
+    background: #444;
+    color: #fff;
+}
+
+/* 刪除題目 */
+.delete-question-btn {
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    margin-left: 6px;
+    font-size: 1em;
+    vertical-align: middle;
+    padding: 0;
+    display: flex;
+    align-items: center;   /* 垂直置中 */
+}
+.delete-question-btn:hover {
+    color: #fff;
+    background: #c62828;
+    border-radius: 50%;
+}
+
+/* 刪除題目 (標題旁的按鈕) */
+.delete-question-header-btn {
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    margin-left: 6px;
+    font-size: 1em;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: background 0.18s;
+}
+.delete-question-header-btn:hover {
+    color: #fff;
+    background: #c62828;
+    border-radius: 50%;
+}
+
+/* 讓星星和刪除按鈕水平對齊 */
+.favorite-actions {
+    display: flex;
+    align-items: center;   /* 垂直置中 */
+    justify-content: center;
+    gap: 6px;
+    height: 100%;
+}
+
+/* favorite-cell 標題與內容寬度一致並置中 */
+.favorite-cell, 
+#sort-by-star-header {
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
+    text-align: center;
+    padding: 0;
+    /* 讓內容垂直置中 */
+    vertical-align: middle;
+}
+
+.favorite-actions {
+    display: flex;
+    align-items: center;   /* 垂直置中 */
+    justify-content: center;
+    gap: 6px;
+    height: 100%;
+}
+
+.star-icon {
+    display: flex;
+    align-items: center;   /* 垂直置中 */
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.delete-question-btn,
+.delete-question-header-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 6px;
+    font-size: 1em;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: background 0.18s;
+}
+.delete-question-btn i,
+.delete-question-header-btn i {
+    color: #f44336 !important;
+    font-size: 1.2em;
+    line-height: 1;
+}
+.delete-question-btn:hover i,
+.delete-question-header-btn:hover i {
+    color: #fff !important;
+    background: #c62828;
+    border-radius: 50%;
+}
+
+.topic-list {
+    padding-right: 15px;
+}

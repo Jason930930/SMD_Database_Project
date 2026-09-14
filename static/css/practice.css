@@ -1,0 +1,239 @@
+/* Styles for the Practice Question Interface */
+
+.practice-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push header to top, footer to bottom */
+    padding: 20px;
+    max-width: 1000px; /* Limit width for better readability */
+    margin: 0 auto; /* Center the container */
+}
+
+.practice-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.question-count {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.practice-header .progress-bar {
+    flex-grow: 1; /* Take up remaining space */
+    margin: 0 10px;
+    height: 15px; /* Thicker progress bar */
+    background-color: var(--progress-bg);
+    border-radius: 6px;
+    margin-right: 20px;
+    align-self: center;
+    overflow: hidden;
+}
+
+.practice-header .progress-fill {
+    height: 100%;
+    background-color: var(--accent-color); /* Use accent color for progress */
+    border-radius: 6px;
+    transition: width 0.5s ease-in-out;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-grey);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+.question-area {
+    flex-grow: 1; /* Allow question area to fill space */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    text-align: left;
+    margin-bottom: 40px; /* Space before feedback/footer */
+}
+
+.question-area.quiz-completed {
+    display: block;
+    text-align: center; 
+    padding: 60px 20px; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.question-area.quiz-completed h1 {
+    color: #28a745;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.question-area.quiz-completed .options-container {
+    display: none;
+}
+
+.question-area.quiz-completed p {
+    color: #4f9bbe;
+    font-size: 1.5em;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.question-area h1 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.question-text {
+    font-size: 24px;
+    color: var(--text-color-light);
+    margin-bottom: 30px;
+    white-space: normal; /* 確保文字正常換行 (通常是預設值) */
+    word-wrap: break-word; /* 舊屬性，用於在長單詞內部換行 */
+    overflow-wrap: break-word; /* 標準屬性，推薦使用，用於在長單詞內部換行 */
+}
+
+/* Styles for Options/Cards */
+.options-container {
+    display: flex; /* 改用 Flexbox */
+    flex-direction: column; /* 讓子元素由上而下排列 */
+    align-self: start; /* 讓選項靠左對齊 */
+    gap: 15px; /* 選項之間的垂直間距 */
+    width: 100%; /* 佔據父容器的寬度 */
+    margin-top: 20px;
+}
+
+/* 保留 .option-card 的其他樣式，只需要修改 p 的部分 */
+.option-card {
+    background-color: var(--card-bg-color);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 15px 20px; /* 調整 padding，讓內容有更多空間 */
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    display: flex; /* 使用 Flexbox 讓 p 元素居中 */
+    align-items: center;
+    justify-content: flex-start; /* 讓文字靠左對齊，如果需要居中可以改 center */
+    text-align: left; /* 讓文字本身靠左對齊，如果需要居中可以改 center */
+    /* min-height: 80px; 可以保留，確保基本高度 */
+    width: 100%; /* 讓卡片佔據 .options-container 的全部寬度 */
+}
+
+.option-card:hover {
+    background-color: #383838;
+}
+
+.option-card p {
+    font-size: 18px;
+    color: var(--text-color-light);
+    white-space: normal; /* 確保文字正常換行 */
+    overflow: visible; /* 確保內容可見 */
+    text-overflow: clip; /* 禁用省略號 */
+    width: 100%; /* 讓文字佔滿卡片內的可用寬度 */
+    word-wrap: break-word; /* 添加以處理超長單詞 */
+    overflow-wrap: break-word; /* 添加以處理超長單詞 */
+}
+
+.option-card.selected {
+     border-color: var(--accent-color);
+}
+
+.option-card.correct {
+    border-color: var(--accent-color, #1db954);
+    border-width: 2px;
+    box-shadow: 4px 0 6px 0px var(--accent-color, #1db954), /* 右邊陰影 */
+                0 4px 6px 0px var(--accent-color, #1db954); /* 下邊陰影 */
+    color: #fff;
+}
+
+.option-card.incorrect {
+    border-color: #f44336;
+    border-width: 2px;
+    box-shadow: 4px 0 6px 0px #f44336, /* 右邊陰影 */
+                0 4px 6px 0px #f44336; /* 下邊陰影 */ /* 水平偏移 0, 垂直偏移 0, 模糊半徑 8px, 擴展半徑 3px */
+    color: #fff;
+}
+
+.option-card.correct p,
+.option-card.incorrect p {
+    color: #fff;
+}
+
+/* Styles for Text Input Answer */
+.answer-input {
+    width: 80%; /* Adjust width as needed */
+    padding: 12px 20px;
+    border: 2px solid var(--card-bg-color);
+    border-radius: 8px;
+    background-color: var(--card-bg-color);
+    color: var(--text-color-light);
+    font-size: 18px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.answer-input:focus {
+    border-color: var(--accent-color);
+}
+
+/* Styles for Footer Buttons */
+.practice-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px; /* Space above footer */
+    border-top: 1px solid #333; /* Separator line */
+}
+
+.skip-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-grey);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.skip-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.check-btn {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+.check-btn:hover:not(:disabled) {
+    background-color: #1ed760;
+}
+
+.check-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Add a utility class to hide elements */
+.hidden {
+    display: none;
+}

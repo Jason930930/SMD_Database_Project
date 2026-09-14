@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}選擇頭像 - SMD學習系統{% endblock %}
+
+{% block login_navbar %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/choose_avatar.css') }}">
+<div class="avatar-choose-wrapper">
+    <h2>選擇頭像</h2>
+    <div id="avatar-list" style="display: flex; gap: 16px; flex-wrap: wrap;"></div>
+    <form id="avatarForm" method="POST">
+        <input type="hidden" name="avatar" id="selectedAvatar">
+        <button type="submit" class="register-button">完成</button>
+    </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarList = document.getElementById('avatar-list');
+    const selectedAvatar = document.getElementById('selectedAvatar');
+    fetch('/get_img', {method: 'POST'})
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        data.datas.urls.forEach(imgPath => {
+            const img = document.createElement('img');
+            img.src = imgPath; // 直接用路徑
+            img.alt = "頭像";
+            img.style.width = '80px';
+            img.style.height = '80px';
+            img.style.cursor = 'pointer';
+            img.style.border = '2px solid transparent';
+            img.addEventListener('click', function() {
+                document.querySelectorAll('#avatar-list img').forEach(i => i.style.border = '2px solid transparent');
+                img.style.border = '2px solid #4caf50';
+                selectedAvatar.value = imgPath;
+            });
+            avatarList.appendChild(img);
+        });
+        document.getElementById('avatarForm').addEventListener('submit', function(e) {
+            if (!selectedAvatar.value) {
+                alert('請選擇頭像');
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

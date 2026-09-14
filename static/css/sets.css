@@ -1,0 +1,667 @@
+/* 主容器樣式 */
+.subject-list-container {
+    width: 100%;
+}
+
+/* 科目區塊樣式 */
+.subject-section {
+    background-color: var(--card-bg-color); /* 使用卡片背景色或稍深的顏色 */
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px; /* 科目區塊之間的間距 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 添加陰影 */
+    position: relative; /* 確保絕對定位參考點 */
+    overflow: visible !important; /* 防止父層裁切 */
+}
+
+.subject-header {
+    display: flex; /* 使用 Flexbox 排列子元素 */
+    align-items: center; /* 垂直居中對齊 */
+    gap: 10px;
+    position: relative;
+}
+
+.subject-title {
+    flex: 0 0 auto;
+    font-size: 22px;
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+    flex-shrink: 0; /* 防止標題在空間不足時縮小 */
+    margin-right: 8px; /* 標題與按鈕之間的間距 */
+}
+
+/* 模擬測驗按鈕樣式 */
+.mock-exam-button {
+    background-color: #4f9bbe; /* 使用強調色 */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    margin-left: 5px;
+    margin-right: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0; /* 防止按鈕在空間不足時縮小 */
+}
+
+.mock-exam-button:hover {
+    background-color: #1db954; /* 懸停時顏色變深 */
+}
+
+/* 單元列表樣式 */
+.unit-list {
+    list-style: none; /* 移除默認列表標記 */
+    padding: 0;
+    margin: 0;
+}
+
+/* 單個單元項目樣式 */
+.unit-item {
+    /* background-color: #333; /* 單元項目背景，可選，與卡片背景區分 */
+    /* border: 1px solid #444; /* 單元項目邊框，可選 */
+    border-bottom: 1px solid #383838; /* 單元項目底部邊框 */
+    padding: 15px 0; /* 單元內邊距 */
+    transition: background-color 0.3s;
+}
+
+.unit-item:last-child {
+    border-bottom: none; /* 最後一個單元移除底部邊框 */
+    padding-bottom: 0;
+}
+
+.unit-item:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* 懸停時背景變亮 */
+}
+
+/* 單元鏈接樣式 */
+.unit-item .unit-link {
+    text-decoration: none; /* 移除下劃線 */
+    color: var(--text-color-light); /* 文字顏色 */
+    display: flex; /* 使用 flex 佈局單元信息和元信息 */
+    justify-content: space-between; /* 分散對齊 */
+    align-items: center; /* 垂直居中 */
+    width: 100%;
+}
+
+.unit-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* 佔據更多空間 */
+    margin-right: 15px; /* 與元信息間距 */
+}
+
+.unit-number {
+    font-size: 15px;
+    color: var(--text-color-grey); /* 單元編號顏色 */
+    margin-right: 10px;
+    flex-shrink: 0; /* 防止編號縮小 */
+}
+
+.unit-title {
+    font-size: 17px;
+    color: var(--text-color-light); /* 單元標題顏色 */
+    font-weight: 500;
+}
+
+.unit-meta {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-color-grey); /* 元信息文字顏色 */
+    flex-shrink: 0; /* 防止元信息縮小 */
+}
+
+.unit-meta span {
+    margin-left: 15px; /* 元信息項之間的間距 */
+    display: flex;
+    align-items: center;
+}
+
+.unit-meta span i {
+    margin-right: 5px; /* 圖標與文字間距 */
+    font-size: 15px;
+}
+
+/* 單元狀態顏色 */
+.unit-status.status-completed {
+    color: var(--completed-color); /* 完成狀態顏色 */
+}
+
+.unit-status.status-in-progress {
+    color: var(--in-progress-color); /* 進行中狀態顏色 */
+}
+
+.unit-status.status-not-started {
+    color: var(--not-started-color); /* 未開始狀態顏色 */
+}
+
+/* 新增：用於水平滾動的容器樣式 */
+.unit-horizontal-scroll {
+    overflow-x: auto; /* 啟用水平滾動條 */
+    overflow-y: hidden; /* 隱藏垂直滾動條 */
+    padding-bottom: 15px; /* 增加底部內邊距，為水平滾動條留出空間 */
+    padding-top: 15px; /* 增加頂部內邊距，為內容留出空間 */
+    margin-bottom: -15px; /* 可選：如果需要，向上調整外邊距以彌補 padding */
+}
+
+/* 樣式化滾動條 (適用於支援 Webkit 的瀏覽器，如 Chrome, Safari, Edge) */
+.unit-horizontal-scroll::-webkit-scrollbar {
+    height: 8px; /* 水平滾動條的高度 */
+}
+
+.unit-horizontal-scroll::-webkit-scrollbar-track {
+    background: var(--bg-color-dark); /* 滾動條軌道的背景色 */
+    border-radius: 10px;
+}
+
+.unit-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: var(--progress-bg); /* 滾動條滑塊的背景色 */
+    border-radius: 10px;
+}
+
+.unit-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color-grey); /* 鼠標懸停在滑塊上時的顏色 */
+}
+
+
+/* 單元列表樣式 - 水平排列 */
+.unit-list.horizontal {
+    list-style: none; /* 移除默認列表標記 */
+    padding: 0;
+    margin: 0;
+    display: flex; /* 使用 Flexbox 使列表項水平排列 */
+    /* white-space: nowrap; /* 可選：防止 flex 項目換行，但 flex: 0 0 auto 更精確控制大小 */
+}
+
+/* 單個單元項目樣式 - 區塊 */
+.unit-item.unit-block {
+    flex: 0 0 auto;
+    /* width: 300px; */
+    background-color: #333; /* 單元項目背景色 */
+    border-radius: 8px;
+    padding: 0;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* 垂直置中 */
+    align-items: center;       /* 水平置中 */
+    text-align: center; 
+    /* **重要：為偽元素定位做準備** */
+    position: relative;
+    overflow: hidden; /* 隱藏超出圓角的偽元素部分 */
+}
+
+.unit-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding: 20px; /* 把內距移到這裡 */
+    box-sizing: border-box;
+}
+
+
+.unit-item.unit-block:last-child {
+    margin-right: 0;
+}
+
+.unit-item.unit-block:hover {
+    background-color: #444;
+    transform: translateY(-3px);
+}
+
+/*用於顯示水位的偽元素*/
+.unit-item.unit-block::after {
+    content: ''; /* 偽元素必須有 content 屬性 */
+    display: block;
+    position: absolute;
+    bottom: 0; /* 定位在區塊底部 */
+    left: 0;
+    width: 100%; /* 寬度佔滿整個區塊 */
+    height: var(--water-level-height, 0%);
+    background-color: var(--completed-color, #4f9bbe); /*主要水位顏色*/
+    opacity: 0.75; /* 水位的透明度 */
+    z-index: 0; 
+    transition: height 0.5s ease-in-out; /* 添加高度變化的過渡效果 */
+}
+
+/* **確保單元內容顯示在水位上方** */
+.unit-item.unit-block .unit-link {
+    position: relative; /* 確保內容在偽元素上方 */
+    z-index: 1; /* 設置更高的 z-index */
+
+    text-decoration: none;
+    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+/* 單元信息區域樣式 */
+.unit-info {
+    margin-bottom: 10px; /* 與元信息間距 */
+}
+
+.unit-number {
+    font-size: 14px;
+    color: var(--text-color-grey);
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.unit-title {
+    font-size: 16px;
+    color: var(--text-color-light);
+    font-weight: 500;
+}
+
+/* 單元元信息區域樣式 */
+.unit-meta {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: center;
+    font-size: 13px; 
+    color: var(--text-color-grey);
+    margin-top: auto;
+}
+
+.unit-meta span {
+    margin-left: 0; /* 移除之前的左側外邊距 */
+    margin-right: 10px; /* 元信息項之間間距 */
+    margin-bottom: 5px; /* 如果換行，下方留空 */
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* 防止元信息項縮小 */
+}
+
+.unit-meta span:last-child {
+     margin-right: 0;
+}
+
+.unit-meta span i {
+    margin-right: 5px;
+    font-size: 14px; /* 調整元信息圖標大小 */
+}
+
+/* 單元狀態顏色 */
+.unit-status.status-completed {
+    color: var(--completed-color);
+}
+
+.unit-status.status-in-progress {
+    color: var(--in-progress-color);
+}
+
+.unit-status.status-not-started {
+    color: var(--not-started-color);
+}
+
+
+.header-filter-container {
+    display: flex;
+    align-items: center; 
+    margin-bottom: 20px; 
+    flex-wrap: wrap; 
+}
+
+.content-section h2 {
+    margin-top: 0;
+    margin-bottom: 0; 
+    border-bottom: none; 
+    padding-bottom: 0;
+    flex-shrink: 0; 
+    margin-right: 20px; 
+}
+
+/* 過濾按鈕容器樣式 */
+.filter-bar {
+    position: relative; /* 必要，用於定位指示器 */
+    /* 使用稍深的背景色作為基底 */
+    background-color: var(--card-bg-color, #333);
+    border-radius: 10px; /* 圓角效果 */
+    padding: 8px; /* 內部空間，讓內容不貼邊 */
+    /* 使用內陰影 (inset) 來模擬挖下去的效果 */
+    display: flex; /* 使用 Flexbox 排列按鈕 */
+    justify-content: flex-start; /* 按鈕靠左對齊 */
+    align-items: center; /* 垂直居中對齊 */
+    gap: 10px; /* 按鈕之間的間距 */
+    overflow: hidden; /* 隱藏超出圓角的部分 */
+}
+
+/* 用於動畫流動的指示器樣式 - 創建亮起區域 */
+.filter-indicator {
+    position: absolute;
+    /* 定位將由 JS 控制，使其覆蓋在選中的按鈕下方 */
+    top: 5px; /* 距離 filter-bar 頂部內邊距 */
+    bottom: 5px; /* 距離 filter-bar 底部內邊距 */
+    /* 使用漸變或單色來模擬亮起效果 */
+    background: linear-gradient(to bottom, rgba(79, 155, 190, 0.8), rgba(79, 155, 190, 0.6)); /* 藍色漸變 */
+    /* 或者使用固體顏色和一些陰影 */
+    /* background-color: rgba(79, 155, 190, 0.7); */
+    /* box-shadow: 0 0 10px rgba(79, 155, 190, 0.5); /* 可選的外部發光效果 */
+
+    border-radius: 6px; /* 圓角，略小於 filter-bar 的圓角 */
+    transition: left 0.3s ease, width 0.3s ease; /* 動畫過渡 */
+    z-index: 0; /* 確保在按鈕下方 */
+    pointer-events: none; /* 確保指示器不會阻擋按鈕點擊 */
+    /* 初始寬度和位置將由 JavaScript 設定 */
+}
+
+/* 過濾按鈕基本樣式 */
+.filter-button {
+    position: relative; /* 確保按鈕在指示器上方 */
+    z-index: 1; /* 設定更高的 z-index */
+    background-color: transparent; /* 按鈕背景透明，才能看到下方的指示器 */
+    color: rgba(255, 255, 255, 0.6); /* 默認文字顏色較暗 */
+    border: none;
+    /* 調整內邊距以適應 filter-bar 的 padding 和指示器的高度 */
+    padding: 8px 15px;
+    margin: 0; /* 間距由 filter-bar 的 gap 控制 */
+    border-radius: 5px; /* 按鈕自身的圓角 */
+    cursor: pointer;
+    transition: color 0.3s ease; /* 文字顏色過渡 */
+    white-space: nowrap; /* 防止按鈕文字換行 */
+    flex-shrink: 0; /* 防止按鈕在空間不足時縮小 */
+    /* 確保按鈕內容垂直居中 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 過濾按鈕懸停效果 */
+.filter-button:hover {
+    color: rgba(255, 255, 255, 0.8); /* 懸停時文字顏色變亮 */
+}
+
+/* 選中狀態的按鈕樣式 */
+.filter-button.active {
+    color: #fff; /* 選中狀態文字顏色最亮 */
+    font-weight: bold;
+    /* 選中狀態的按鈕本身不需要背景色，背景是 indicator */
+}
+
+/* 隱藏不符合條件的單元 */
+.unit-item[style*="display: none"] {
+    display: none !important; /* 確保隱藏 */
+}
+
+.unit-item.selected {
+    outline: 2px solid var(--accent-color, #1ed760);
+    background: #232323;
+    transform: translateY(-3px);
+}
+
+/* 新增科目卡片外觀 */
+.add-subject-card.subject-section {
+    background-color: var(--card-bg-color, #232323);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s;
+    position: relative;
+}
+.add-subject-card.subject-section:hover {
+    background: #444;
+    box-shadow: 0 6px 18px #0004;
+}
+.add-subject-placeholder {
+    color: #b3b3b3;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.add-subject-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    text-align: center; /* 讓內容置中 */
+}
+#add-subject-input {
+    width: 70%;
+    padding: 10px 14px;
+    border: none;
+    border-bottom: 2px solid var(--accent-color, #1db954);
+    background: transparent;
+    color: #fff;
+    font-size: 1.08rem;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 4px;
+}
+#add-subject-input:focus {
+    border-bottom: 2.5px solid #1ed760;
+    background: transparent;
+}
+
+.add-subject-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 2px;
+}
+
+.add-subject-cancel, .add-subject-submit {
+    color: var(--accent-color, #1db954);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 18px;
+    border-radius: 16px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    transition: background 0.18s, color 0.18s;
+}
+.add-subject-cancel:hover, .add-subject-submit:hover {
+    background: #1ed760;
+    color: #fff;
+}
+
+.add-subject-msg {
+    margin-top: 4px;
+    font-size: 0.98rem;
+    min-height: 1.2em;
+    color: #ff7675;
+    text-align: center;
+}
+
+/* 新增單元卡片外觀 */
+.add-unit-block {
+    width: 200px;
+    flex: 0 0 auto;
+    background-color: #333;
+    border-radius: 8px;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.2s;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.add-unit-card:hover {
+    background: #444;
+    box-shadow: 0 4px 18px #0004;
+    cursor: pointer;
+}
+.add-unit-placeholder {
+    color: #b3b3b3;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.add-unit-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    text-align: center;
+}
+.add-unit-row {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.add-unit-input, .add-unit-examtype {
+    width: 48%;
+    min-width: 0;
+    margin-bottom: 0;
+    padding: 8px 12px;
+    border: none;
+    border-bottom: 2px solid var(--accent-color, #1db954);
+    background: transparent;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 4px;
+}
+.add-unit-input:focus, .add-unit-examtype:focus {
+    border-bottom: 2.5px solid #1ed760;
+}
+.add-unit-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 2px;
+}
+.add-unit-cancel, .add-unit-submit {
+    color: var(--accent-color, #1db954);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 18px;
+    border-radius: 16px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    transition: background 0.18s, color 0.18s;
+}
+.add-unit-cancel:hover, .add-unit-submit:hover {
+    background: #1ed760;
+    color: #fff;
+}
+.add-unit-msg {
+    margin-top: 4px;
+    font-size: 0.98rem;
+    min-height: 1.2em;
+    color: #ff7675;
+    text-align: center;
+}
+.add-unit-examtype {
+    background: #232323;
+    color: #fff;
+    width: 50%;
+    padding: 8px 12px;
+    border: none;
+    border-bottom: 2px solid var(--accent-color, #1db954);
+    background: transparent;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+}
+.add-unit-examtype:focus {
+    border-bottom: 2.5px solid #1ed760;
+    background: transparent;
+}
+.add-unit-examtype option {
+    background: #232323;
+    color: #fff;
+}
+
+/* 刪除科目 */
+.subject-more-menu-container {
+    margin-left: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.subject-more-btn {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s;
+}
+.subject-more-btn:hover {
+    background: #222;
+}
+
+.subject-more-menu {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: #232323;
+    border: 1px solid #444;
+    border-radius: 8px;
+    min-width: 110px;
+    z-index: 9999; /* 提高層級 */
+    box-shadow: 0 4px 16px #0004;
+    display: none;
+}
+.subject-more-menu .subject-delete-btn {
+    color: #f44336;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.18s;
+}
+.subject-more-menu .subject-delete-btn:hover {
+    background: #2a0000;
+}

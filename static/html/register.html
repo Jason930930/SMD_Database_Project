@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}註冊 - SMD學習系統{% endblock %}
+
+{% block login_navbar %}{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+
+    <div class="register-page-wrapper"> {# 頁面整體容器，用於居中 #}
+        <div class="register-card"> {# 卡片式容器 #}
+            <div class="card-header">
+                <h2>會員註冊</h2>
+            </div>
+            <div class="card-body">
+                <form id="registrationForm" action="{{ url_for('register') }}" method="POST">
+                    {# 電子郵件 (Email) #}
+                    <div class="form-group">
+                        <label for="email">電子郵件</label>
+                        <input type="email" id="email" name="email" placeholder="輸入電子郵件" required>
+                    </div>
+
+                    {# 用戶名 (Username) #}
+                    <div class="form-group">
+                        <label for="username">使用者名稱</label>
+                        <input type="text" id="username" name="username" placeholder="輸入使用者名稱" required>
+                    </div>
+
+                    {# 密碼 (Password) #}
+                    <div class="form-group">
+                        <label for="password">密碼</label>
+                        <input type="password" id="password" name="password" placeholder="輸入密碼" required>
+                    </div>
+                     {# 確認密碼 (Confirm Password) #}
+                    <div class="form-group">
+                        <label for="confirm_password">確認密碼</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="再次確認密碼" required>
+                    </div>
+
+                    <p id="passwordError" class="error-message" style="display: none;">密碼不一致！</p> {# 使用自定義錯誤訊息類別 #}
+
+
+                    {# 科系 (Major)#}
+                    <div class="form-group">
+                        <label for="major">系所</label>
+                        <select id="major" name="major" required>
+                            <option value="">請選擇</option>
+                            <option value="IMF">資財系</option>
+                            <option value="IMF">資訊管理與財務金融學系</option>
+                            <option value="IMF">IMF</option>
+                            <option value="Other">其他</option>
+                        </select>
+                    </div>
+
+                    {# 年級 (Grade)#}
+                    <div class="form-group">
+                        <label for="grade">年級</label>
+                        <select id="grade" name="grade" required>
+                             <option value="">請選擇</option>
+                            <option value="Freshman">大一</option>
+                            <option value="Sophomore">大二</option>
+                            <option value="Junior">大三</option>
+                            <option value="Senior">大四</option>
+                            <option value="Grad1">研究所一年級</option>
+                            <option value="Grad2">研究所二年級</option>
+                            <option value="PhD">博士班</option>
+                            <option value="Other">其他</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="register-button">立即註冊</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <p>
+                    已經有帳號了？ <a href="{{ url_for('login') }}">立即登入</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const passwordError = document.getElementById('passwordError');
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                passwordError.style.display = 'block'; // 顯示錯誤訊息元素
+                // 清空密碼欄位（可選，但有助於用戶重新輸入）
+                // document.getElementById('password').value = '';
+                // document.getElementById('confirm_password').value = '';
+            }
+            else {
+                passwordError.style.display = 'none'; // 隱藏錯誤訊息元素
+            }
+        });
+    </script>
+{% endblock %}

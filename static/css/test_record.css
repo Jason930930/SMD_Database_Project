@@ -1,0 +1,156 @@
+.test-record-container {
+    /* max-width: 900px; */
+    margin: 40px auto;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px #0003;
+}
+.test-record-title {
+    font-size: 2.2rem;
+    margin-bottom: 28px;
+    color: #fff;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-align: left;
+}
+.test-record-list {
+    margin-top: 10px;
+}
+.test-record-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px #0002;
+    margin-bottom: 20px;
+    padding: 20px 22px 12px 22px;
+    border: 1px solid #333;
+}
+.test-record-card:hover {
+    background: #292929;
+    box-shadow: 0 4px 16px #0004;
+}
+.test-record-summary {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 1.1rem;
+    color: var(--text-color-light, #e0e0e0);
+    margin-bottom: 8px;
+}
+.test-record-summary .expand-btn {
+    margin-left: auto;
+    padding: 5px 20px;
+    border: none;
+    background: var(--accent-color, #1db954);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.test-record-summary .expand-btn:hover {
+    background: #1ed760;
+}
+.test-record-date,
+.test-record-accuracy,
+.test-record-num {
+    color: var(--text-color-grey, #b3b3b3);
+    font-size: 1rem;
+    margin-right: 10px;
+}
+.test-record-detail {
+    margin-top: 18px;
+    background: #232323;
+    border-radius: 8px;
+    padding: 16px 18px;
+    border: 1px solid #333;
+    color: var(--text-color-light, #e0e0e0);
+    font-size: 1rem;
+}
+.test-record-group {
+    margin-bottom: 18px;
+}
+.test-record-group-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--accent-color, #1db954);
+    font-size: 1.08rem;
+    letter-spacing: 1px;
+}
+.test-record-question-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+.test-record-question-list li {
+    padding: 7px 0;
+    border-bottom: 1px solid #333;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.test-record-qid {
+    color: var(--accent-color, #1db954);
+    font-weight: 600;
+    margin-right: 8px;
+}
+.test-record-qtext {
+    flex: 1;
+    color: #fff;
+}
+.test-record-qstar {
+    color: #fbc02d;
+    margin-left: 8px;
+    font-size: 1.1em;
+}
+.test-record-qhist {
+    color: #b3b3b3;
+    font-size: 0.98em;
+    margin-left: 10px;
+}
+.no-record {
+    color: #b3b3b3;
+    text-align: center;
+    font-size: 1.1rem;
+    margin: 40px 0;
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .test-record-container {
+        padding: 16px 4px;
+    }
+    .test-record-card {
+        padding: 12px 6px 8px 6px;
+    }
+    .test-record-title {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+    }
+    .test-record-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+.test-record-question-list li:hover {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+/* 建議加到你的 CSS 檔 */
+.result-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.qid-correct {
+    color: #4caf50 !important;
+}
+.qid-incorrect {
+    color: #f44336 !important;
+}

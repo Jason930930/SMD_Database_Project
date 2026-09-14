@@ -1,0 +1,137 @@
+.login-page-wrapper {
+    width: 100%;
+    display: flex; /* 使用 Flexbox */
+    justify-content: center; /* 水平置中 */
+    height: 100vh; /* 讓容器高度佔滿整個視窗 */
+    padding-top: 5%; /* 增加上方間距，讓卡片稍微下移 */
+    background-color: var(--bg-color-dark); /* 可選：設置背景色 */
+}
+
+.login-card {
+    width: 40%; 
+    border-radius: 8px; /* 圓角 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* 陰影 */
+    overflow: hidden; /* 確保子元素圓角不溢出 */
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid #383838; /* 分隔線 */
+    text-align: center; /* 標題居中 */
+    color: #fff; /* 標題顏色 */
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.card-body {
+    padding: 25px 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block; /* 標籤獨立一行 */
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--text-color-grey); /* 標籤文字顏色 */
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #555; /* 邊框顏色 */
+    border-radius: 5px;
+    background-color: var(--bg-color-dark); /* 輸入框背景色 */
+    color: var(--text-color-light); /* 輸入框文字顏色 */
+    font-size: 16px;
+    outline: none; /* 移除默認聚焦邊框 */
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box; /* 確保 padding 不影響寬度 */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: var(--accent-color); /* 聚焦時邊框變色 */
+    background-color: #333; /* 聚焦時背景微變 */
+    color: #fff;
+    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5); /* 聚焦時添加淺色陰影 */
+}
+
+.form-check-group input[type="checkbox"] {
+    margin-right: 8px; /* checkbox 與 label 間距 */
+    /* 如果需要自定義 checkbox 樣式，這裡會更複雜 */
+}
+
+.form-check-group label {
+    margin-bottom: 0; /* 移除 label 默認底部外邊距 */
+    font-size: 14px;
+    color: var(--text-color-grey); /* Checkbox 標籤文字顏色 */
+    font-weight: normal;
+}
+
+
+.login-button {
+    display: block; /* 確保按鈕是區塊元素 */
+    margin: 15px auto 0; /* 上方間距 15px，水平置中 */
+    width: 20%;
+    background-color: var(--accent-color); /* 使用強調色 */
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px; /* 圓角按鈕 */
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 15px;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+.login-button:hover {
+    background-color: #1ed760; /* 懸停時顏色變亮 */
+    opacity: 0.9;
+}
+
+.login-button:active {
+    background-color: #1aa34a; /* 點擊時顏色變深 */
+}
+
+.card-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #383838; /* 分隔線 */
+    text-align: center; /* 底部內容居中 */
+    font-size: 14px;
+}
+
+.card-footer p {
+    margin: 0; /* 移除默認段落外邊距 */
+}
+
+.card-footer a {
+    color: var(--text-color-grey); /* 鏈接顏色 */
+    text-decoration: none;
+    margin: 0 8px; /* 鏈接間距 */
+    transition: color 0.3s;
+}
+
+.card-footer a:hover {
+    color: var(--accent-color); /* 懸停時變色 */
+    text-decoration: underline;
+}
+
+.link-separator {
+    color: var(--text-color-grey); /* 分隔符顏色 */
+}
+
+/* 如果需要處理 Flask 閃爍訊息的樣式，可以為其添加自定義類別並在這裡定義 */
+/* 例如 HTML: <div class="app-message success">...</div> */
+/* .app-message { ... }
+.app-message.success { background-color: var(--accent-color); color: #fff; ... }
+.app-message.danger { background-color: #dc3545; color: #fff; ... }
+*/

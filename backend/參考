@@ -1,0 +1,301 @@
+
+// add_question
+const data = {
+    "subject_id" : "test",
+    "unit_id" : "test",
+    "question_id" : "1",
+    "question_data" : {"Q" : "6*3", "O1" : "6", "O2" : "66", "O3" : "666", "O4" : "6666", "A" : "666"}
+};
+
+fetch('/add_question', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Network response was not ok');
+    }
+})
+.then(result => {
+    console.log('伺服器回傳的資料:', result);
+})
+
+
+返回 {"success" : true or false}
+
+
+// delete_question
+const data = {"subject_id" : "IN", "unit_id" : "ch7", "question_id" : "1"};
+fetch('/delete_question', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+
+返回 {"success" : true or false}
+
+
+// add_subject
+const data = {"subject_id" : "IN"};
+
+fetch('/add_subject', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Network response was not ok');
+    }
+})
+.then(result => {
+    const datas = result; // 抓取回傳的 data
+    console.log('伺服器回傳的資料:', datas);
+})
+
+返回 {"success" : true or false}
+
+
+// delete_subject
+const data = {"subject_id" : "IN"};
+fetch('/delete_subject', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+
+返回 {"success" : true or false}
+
+
+// add_unit 
+const data = {"subject_id" : "IN", "unit_id" : "ch7", "examtype" : "期中一"};
+
+fetch('/add_unit', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Network response was not ok');
+    }
+})
+.then(result => {
+    const datas = result; // 抓取回傳的 data
+    console.log('伺服器回傳的資料:', datas);
+})
+
+返回 {"success" : true or false}
+
+
+// delete_unit
+const data = {"subject_id" : "IN", "unit_id" : "ch7"};
+fetch('/delete_unit', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+
+返回 {"success" : true or false}
+
+// get_questions
+const data = {
+    datas: [{"subject_id" : "INVESTMENT", "unit_id" : "ch8"},{"subject_id" : "MANAGEMENT", "unit_id" : "ch8"}]
+};
+
+fetch('/get_questions', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Network response was not ok');
+    }
+})
+.then(result => {
+    const datas = result.datas; // 抓取回傳的 data
+    console.log('伺服器回傳的資料:', datas);
+})
+
+
+返回請參考  "返回的json格式.json"
+
+
+
+
+// update_hist
+const data = {
+    datas: datas : [{"subject_id" : "INVESMENT", "unit_id" : "ch8", "question_id" : "2", "correct" : true},{{"subject_id" : "INVESMENT", "unit_id" : "ch8", "question_id" : "3", "correct" : false}}]
+};
+
+fetch('/update_hist', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json' // 指定內容類型為 JSON
+    },
+    body: JSON.stringify(data) // 將資料轉換為 JSON 格式
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Network response was not ok');
+    }
+})
+.then(result => {
+    const datas = result; // 抓取回傳的 data
+    console.log('伺服器回傳的資料:', datas);
+})
+
+返回 {"success" : true}
+
+
+// add_test_record
+傳入
+{
+    'date': '年月日',
+    'accuracy': '95%',
+    'num': '3',
+    'questions': [
+        {
+            'subject_id': 'MANAGEMENT',
+            'unit_id': 'ch8',
+            'questions': [1, 5]
+        },
+        {
+            'subject_id': 'INVESTMENT',
+            'unit_id': 'ch5',
+            'questions': [1]
+        }
+    ]
+}
+
+返回 {"success" : true}
+
+
+
+// get_test_record
+直接訪問不用傳參數 給你進到歷史頁面中條列式用的
+
+回傳
+[
+    {
+        "record_id" : "4wrt4h54etr4h5",
+        'date': '年月日',
+        'accuracy': '95%',
+        'num': '3',
+        'questions': [
+            {
+                'subject_id': 'MANAGEMENT',
+                'unit_id': 'ch8',
+                'questions': [1, 5]
+            },
+            {
+                'subject_id': 'INVESTMENT',
+                'unit_id': 'ch5',
+                'questions': [1]
+            }
+        ]
+    },
+    {
+        "record_id" : "41sd5h456sd4hs",
+        'date': '年月日',
+        'accuracy': '95%',
+        'num': '3',
+        'questions': [
+            {
+                'subject_id': 'MANAGEMENT',
+                'unit_id': 'ch8',
+                'questions': [1, 5]
+            },
+            {
+                'subject_id': 'INVESTMENT',
+                'unit_id': 'ch5',
+                'questions': [1]
+            }
+        ]
+    }
+]
+
+
+// get_test_record_detail
+傳入 {"record_id" : "41sd5h456sd4hs"}
+
+回傳
+{
+    'date': '年月日',
+    'accuracy': '95%',
+    'num': '3',
+    'questions': [
+        {
+            'subject_id': 'MANAGEMENT',
+            'unit_id': 'ch8',
+            'questions': [ // 跟get_questions一樣格式
+                {
+                    "question_id" : "1",
+                    "star" : true,
+                    "hist" : {"answer" : 5, "correct" : 3},
+                    "Q" : "What is the main purpose of the management function?",
+                    "A" : "C) 6666",
+                    "O1" : "A) 66",
+                    "O2" : "B) 666",
+                    "O3" : "C) 6666",
+                    "O4" : "D) 66666"
+                },
+                {
+                    "question_id" : "2",
+                    "star" : true,
+                    "hist" : {"answer" : 5, "correct" : 3},
+                    "Q" : "What is the main purpose of the management function?",
+                    "A" : "C) 6666",
+                    "O1" : "A) 66",
+                    "O2" : "B) 666",
+                    "O3" : "C) 6666",
+                    "O4" : "D) 66666"
+                }
+            ]
+        },
+        {
+            'subject_id': 'INVESTMENT',
+            'unit_id': 'ch5',
+            'questions': [
+                {
+                    "question_id" : "1",
+                    "star" : true,
+                    "hist" : {"answer" : 5, "correct" : 3},
+                    "Q" : "What is the main purpose of the management function?",
+                    "A" : "C) 6666",
+                    "O1" : "A) 66",
+                    "O2" : "B) 666",
+                    "O3" : "C) 6666",
+                    "O4" : "D) 66666"
+                
+                }
+            ]
+        }
+    ]
+},

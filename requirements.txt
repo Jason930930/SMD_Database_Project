@@ -1,0 +1,4 @@
+flask
+firebase_admin
+bcrypt
+flask-login

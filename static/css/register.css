@@ -1,0 +1,142 @@
+.register-page-wrapper {
+    width: 100%;
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    min-height: 100vh;
+    padding: 20px; 
+    box-sizing: border-box;
+    overflow-y: auto; 
+    background-color: var(--bg-color-dark);
+}
+
+.register-card {
+    width: 45%; 
+    border-radius: 8px; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
+    overflow: hidden; 
+}
+
+.card-header {
+    padding: 10px;
+    border-bottom: 1px solid #383838; /* 分隔線 */
+    text-align: center; /* 標題居中 */
+    color: #fff; /* 標題顏色 */
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.card-body {
+    padding: 25px 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block; /* 標籤獨立一行 */
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--text-color-grey); /* 標籤文字顏色 */
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select { /* 添加 select 選擇框的樣式 */
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #555; /* 邊框顏色 */
+    border-radius: 5px;
+    background-color: var(--bg-color-dark); /* 輸入框/選擇框背景色 */
+    color: var(--text-color-light); /* 輸入框/選擇框文字顏色 */
+    font-size: 16px;
+    outline: none; /* 移除默認聚焦邊框 */
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box; /* 確保 padding 不影響寬度 */
+}
+
+.form-group input::placeholder {
+    color: var(--text-color-grey); /* 佔位符文字顏色 */
+    opacity: 0.7;
+}
+
+.form-group input:focus,
+.form-group select:focus { /* 添加 select 的聚焦樣式 */
+    border-color: var(--accent-color); /* 聚焦時邊框變色 */
+    background-color: #333; /* 聚焦時背景微變 */
+    color: #fff;
+    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5); /* 聚焦時添加淺色陰影 */
+}
+
+/* 科系和年級選擇框的特殊樣式調整 */
+.form-group select {
+    cursor: pointer;
+}
+
+/* 錯誤訊息樣式 */
+.error-message {
+    color: var(--error-color, #dc3545); /* 使用錯誤顏色變數或默認紅色 */
+    font-size: 14px;
+    margin-top: -15px; /* 向上微調位置 */
+    margin-bottom: 20px;
+    text-align: left; /* 靠左對齊 */
+}
+
+
+.register-button { /* 註冊按鈕樣式，與登入按鈕風格一致 */
+    display: block; /* 確保按鈕是區塊元素 */
+    margin: 15px auto 0; /* 上方間距 15px，水平置中 */
+    width: 25%;
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 15px;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+.register-button:hover {
+    background-color: #1ed760;
+    opacity: 0.9;
+}
+
+.register-button:active {
+    background-color: #1aa34a;
+}
+
+.card-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #d7d7d7; /* 分隔線 */
+    text-align: center; /* 底部內容居中 */
+    font-size: 14px;
+}
+
+.card-footer p {
+    margin: 0; /* 移除默認段落外邊距 */
+}
+
+.card-footer a {
+    color: var(--text-color-grey); /* 鏈接顏色 */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.card-footer a:hover {
+    color: var(--accent-color); /* 懸停時變色 */
+    text-decoration: underline;
+}
+
+/* 如果底部只有一個鏈接，可以移除分隔符，或者保留以防將來添加更多鏈接 */
+/* .link-separator {
+    color: var(--text-color-grey);
+} */

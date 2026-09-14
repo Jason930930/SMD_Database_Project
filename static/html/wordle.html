@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/wordle.css') }}">
+    <title>Wordle</title>
+</head>
+<body>
+    <header>Wordle</header>
+    <div id="game">
+        <div class="grid"></div>
+        <div>
+            <div class="keyboard">
+                <button value="Q" id="Q" class="Key" onclick="btn_click(this)">Q</button>
+                <button value="W" id="W" class="Key" onclick="btn_click(this)">W</button>
+                <button value="E" id="E" class="Key" onclick="btn_click(this)">E</button>
+                <button value="R" id="R" class="Key" onclick="btn_click(this)">R</button>
+                <button value="T" id="T" class="Key" onclick="btn_click(this)">T</button>
+                <button value="Y" id="Y" class="Key" onclick="btn_click(this)">Y</button>
+                <button value="U" id="U" class="Key" onclick="btn_click(this)">U</button>
+                <button value="I" id="I" class="Key" onclick="btn_click(this)">I</button>
+                <button value="O" id="O" class="Key" onclick="btn_click(this)">O</button>
+                <button value="P" id="P" class="Key" onclick="btn_click(this)">P</button>
+            </div>
+            <div class="keyboard">
+                <button value="A" id="A" class="Key" onclick="btn_click(this)">A</button>
+                <button value="S" id="S" class="Key" onclick="btn_click(this)">S</button>
+                <button value="D" id="D" class="Key" onclick="btn_click(this)">D</button>
+                <button value="F" id="F" class="Key" onclick="btn_click(this)">F</button>
+                <button value="G" id="G" class="Key" onclick="btn_click(this)">G</button>
+                <button value="H" id="H" class="Key" onclick="btn_click(this)">H</button>
+                <button value="J" id="J" class="Key" onclick="btn_click(this)">J</button>
+                <button value="K" id="K" class="Key" onclick="btn_click(this)">K</button>
+                <button value="L" id="L" class="Key" onclick="btn_click(this)">L</button>
+            </div>
+            <div class="keyboard">
+                <button value="↵" id="↵" class="Key special" onclick="btn_click(this)">✔</button>
+                <button value="Z" id="Z" class="Key" onclick="btn_click(this)">Z</button>
+                <button value="X" id="X" class="Key" onclick="btn_click(this)">X</button>
+                <button value="C" id="C" class="Key" onclick="btn_click(this)">C</button>
+                <button value="V" id="V" class="Key" onclick="btn_click(this)">V</button>
+                <button value="B" id="B" class="Key" onclick="btn_click(this)">B</button>
+                <button value="N" id="N" class="Key" onclick="btn_click(this)">N</button>
+                <button value="M" id="M" class="Key" onclick="btn_click(this)">M</button>
+                <button value="←" id="←" class="Key special" onclick="btn_click(this)">←</button>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="dictionary.js"></script>
+    <script src="script.js"></script> -->
+    <script src="{{url_for('static' , filename='js/dictionary.js')}}"></script>
+    <script src="{{url_for('static' , filename='js/script.js')}}"></script>
+    <footer>
+        <p>© 2024 Wordle Copy design by C.S.Chou</p>
+    </footer>
+</body>
+</html>

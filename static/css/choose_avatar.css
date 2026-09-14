@@ -1,0 +1,66 @@
+.avatar-choose-wrapper {
+    max-width: 420px;
+    margin: 60px auto 0 auto;
+    background: var(--card-bg-color, #282828);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    padding: 32px 32px 24px 32px;
+    text-align: center;
+}
+
+.avatar-choose-wrapper h2 {
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+}
+
+#avatar-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+#avatar-list img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid transparent;
+    background: #444;
+    transition: border 0.2s, transform 0.2s;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#avatar-list img:hover,
+#avatar-list img.selected,
+#avatar-list img[style*="border: 2px solid #4caf50"] {
+    border: 3px solid var(--accent-color, #1db954);
+    transform: scale(1.08);
+    background: #222;
+}
+
+#avatarForm {
+    margin-top: 10px;
+}
+
+.register-button {
+    background: var(--accent-color, #1db954);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 36px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: 10px;
+}
+
+.register-button:hover {
+    background: #1ed760;
+    transform: translateY(-2px) scale(1.04);
+}

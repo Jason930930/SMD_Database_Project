@@ -1,0 +1,100 @@
+.settings-page-wrapper {
+    padding: 20px;
+    color: var(--text-color-light);
+}
+
+.settings-header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.settings-header p {
+    font-size: 16px;
+    color: var(--text-color-grey);
+}
+
+.settings-sections {
+    margin-top: 20px;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    /* background-color: var(--card-bg-color); */
+    border-radius: 8px;
+}
+
+.settings-section h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.settings-section .form-group {
+    margin-bottom: 15px;
+}
+
+.settings-section .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--text-color-grey);
+}
+
+.settings-section .form-group input,
+.settings-section .form-group select {
+    width: 50%; /* 設定寬度為容器的一半 */
+    padding: 10px;
+    border: none; /* 移除邊框 */
+    border-radius: 5px;
+    background-color: var(--card-bg-color);
+    color: var(--text-color-light);
+    font-size: 14px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 添加內陰影 */
+    display: block; /* 確保輸入框是區塊元素 */
+}
+
+.settings-section .form-group input:focus,
+.settings-section .form-group select:focus {
+    outline: none;
+    background-color: #333; /* 聚焦時背景微變 */
+    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5); /* 聚焦時添加陰影 */
+}
+
+.settings-button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none; /* 移除邊框 */
+    padding: 10px 20px;
+    border-radius: 20px; /* 更圓潤的按鈕 */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.settings-button:hover {
+    background-color: #1ed760;
+    transform: scale(1.02); /* 懸停時微縮放 */
+}
+
+.delete-button {
+    background-color: #dc3545; /* 紅色 */
+    color: #fff;
+    border: none; /* 移除邊框 */
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 20px; /* 更圓潤的按鈕 */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #c82333; /* 更深的紅色 */
+    transform: scale(1.02); /* 懸停時微縮放 */
+}
+
+.avatar-preview img {
+    border: 2px solid #ccc;
+    margin-bottom: 8px;
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SMD學習平台{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="/">SMD 學習平台</a>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/" class="active"><i class="fas fa-home"></i> <span>首頁</span></a></li>
+                    <li><a href="sets"><i class="fas fa-compass"></i> <span>瀏覽課程</span></a></li>
+                    <li><a href="test_record"><i class="fas fa-tags"></i> <span>測驗紀錄</span></a></li>
+                    <li><a href="wordle"><i class="fas fa-book-open"></i> <span>Wordle</span></a></li>
+                    <br><br><br>
+                </ul>
+            </nav>
+            <div class="create-playlist">
+                <button><i class="fas fa-plus-circle"></i> 建立新的清單</button>
+            </div>
+            <div class="sidebar-footer">
+                <p>一些資訊</p>
+                <ul>
+                    <li><a href="about-us"> - 關於我們</a></li>
+                    <li><a href="contact-us"> - 聯絡我們</a></li>
+                    <li><a href="/privacy"> - 隱私政策</a></li>
+                    <li><a href="/terms"> - 使用條款</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="搜尋課程、類別、講師...">
+                </div>
+                {% block login_navbar %}
+                <div class="user-info">
+                    <i class="fas fa-bell"></i>
+                    <div class="avatar">
+                        {% if current_user.is_authenticated %}
+                            <img src="{{current_user.img}}" alt="User Img">
+                        {% endif %}
+                    </div>  
+                    <div class="dropdown-container"> 
+                        <i class="fas fa-caret-down"></i>
+                        <div class="dropdown-menu">
+                            {% if current_user.is_authenticated %}
+                                <div class="user-details">
+                                    <img src="{{current_user.img}}" alt="User Img">
+                                    <p>{{ current_user.username }}</p>
+                                </div>
+                            {% endif %}
+                            <ul>
+                                {% if not current_user.is_authenticated %}
+                                    <li><a href="login">登入</a></li>
+                                    <li><a href="register">註冊</a></li>
+                                {% else %}
+                                    <li><a href="logout">登出</a></li>
+                                    <li><a href="settings">設置</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="app-messages"> {# 自定義訊息容器 #}
+                        {% for category, message in messages %}
+                            <div class="app-message {{ category }}"> {# 自定義訊息樣式類別，如 success, danger #}
+                                {{ message }}
+                                <span class="close-btn" onclick="this.parentElement.style.display='none';"></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const messages = document.querySelectorAll('.app-message');
+        messages.forEach(message => {
+            // 添加 .show class，觸發顯示動畫
+            setTimeout(() => {
+                message.classList.add('show');
+            }, 100);
+
+            // 3 秒後移除 .show class，並添加 .hide class
+            setTimeout(() => {
+                message.classList.remove('show');
+                message.classList.add('hide');
+            }, 3100); // 3 秒後觸發
+        });
+
+        // 左邊欄反白   
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+        const currentPath = window.location.pathname; 
+        navLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname; 
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+
+    
+</script>

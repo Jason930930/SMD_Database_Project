@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chapter.css') }}"> 
+
+<div class="content-section"> {# 頁面主要內容容器 #}
+    <h2 id= "title"> {{questions.get('subject_id')}} / {{questions.get('unit_id') }} - 題目列表</h2>
+
+    <div class="topic-controls"> {# 上方控制區域，包含排序選項和按鈕 #}
+        <div class="sort-options"> {# 排序選項群組 #}
+            <label for="sort-by">排序方式:</label>
+            <select id="sort-by"> 
+                <option value="default">預設</option>
+                <option value="answer-rate-asc">答題率 (低到高)</option>
+                <option value="answer-rate-desc">答題率 (高到低)</option>
+            </select>
+        </div>
+        <a href="#" class="practice-unit-btn">
+            <button><i class="fas fa-play-circle"></i> 開始測驗</button> 
+        </a>
+        {# 新增題目按鈕，觸發 新增題目 Modal 對話框 #}
+        {% if questions.meta.owner == current_user_id %}
+            <button class="add-topic-btn" id="showAddTopicDialogBtn"><i class="fas fa-plus-circle" ></i> 新增題目</button> 
+            <button class="delete-unit-btn" id="deleteUnitBtn" style="margin-left:8px;color:#f44336;"><i class="fas fa-trash-alt"></i></button>
+        {% endif %}
+    </div>
+
+    <div class="topic-list"> {# 放所有題目的地方#}
+        <table> {# 題目表格 #}
+            <thead> {# 表格頭部 #}
+                <tr> {# 頭部行 #}
+                    <th>題目</th> {# 題目標題列 #}
+                    <th>答題率</th> {# 答題率標題列 #}
+                    {# 星號標題列，用於觸發按星號排序 #}
+                    <th class="favorite-cell" id="sort-by-star-header">
+                        <div class="favorite-actions">
+                            <i class="far fa-star"></i>
+                            {% if questions.meta.owner == current_user_id %}
+                            <button class="delete-question-header-btn" title="刪除題目（僅示意）">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="topic-table-body"> {# 表格主體，動態載入題目行 #}
+                {% set question_list = questions.get('questions') or [] %}
+                {% if question_list %}
+                    {% for question in questions.get('questions') %}
+                    {% set answer_count = question.hist.answer if question.hist and question.hist.answer is defined else 0 %}
+                    {% set correct_count = question.hist.correct if question.hist and question.hist.correct is defined else 0 %}
+                    {% set answer_rate = (correct_count / answer_count * 100) | round(0, 'floor') if answer_count > 0 else 0 %}
+                    <tr data-answer-rate="{{ answer_rate }}"
+                        data-question-id="{{ question.get('question_id') }}"
+                        data-subject-id="{{ questions.get('subject_id') }}"
+                        data-unit-id="{{ questions.get('unit_id') }}"
+                        data-star="{{question.get('star', 0)}}">
+                        
+                        <td> {# 題目單元格 #}
+                            <a href="#" class="practice-question-link" data-question-id="{{ question.id }}">
+                                {{ question.get('question_id') }} {# 顯示題目 ID (或標題) #}
+                            </a>
+                        </td>
+                        
+                        <td>
+                            <div class="answer-rate-info">
+                                <div class="answer-rate-bar"
+                                    style="border: 2px solid {% if answer_count > 0 %}#4caf50{% else %}#888{% endif %}; overflow: hidden; background: #222;">
+                                    {% if answer_count > 0 %}
+                                        <div class="answer-rate-fill"
+                                            style="width: {{ answer_rate }}%; height: 100%; background: #4caf50; transition: width 0.3s;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if answer_count > 0 %}
+                                    <span>{{ answer_rate }}%</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <td class="favorite-cell">
+                            <div class="favorite-actions">
+                                <span class="topic-favorite star-icon {% if question.get('star', False) %}active{% endif %}">
+                                    <i class="{% if question.get('star', False) %}fas{% else %}far{% endif %} fa-star"></i>
+                                </span>
+                                {% if questions.meta.owner == current_user_id %}
+                                <button class="delete-question-btn" 
+                                        data-question-id="{{ question.get('question_id') }}"
+                                        data-subject-id="{{ questions.get('subject_id') }}"
+                                        data-unit-id="{{ questions.get('unit_id') }}"
+                                        title="刪除題目">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %} 
+                    <tr> {# 顯示沒有題目的提示行 #}
+                        <td colspan="3" style="text-align: center;">此單元沒有題目。</td> {# 合併三列並居中顯示 #}
+                    </tr>
+                {% endif %} 
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# 新增題目對話框 HTML 開始 #}
+{# 使用 <dialog> 原生元素 #}
+<dialog id="addTopicDialog"> 
+    {# 對話框標題 #}
+    <h2>新增 {{subject_id}} / {{unit_name }} 選擇題</h2>
+    {# 表單，用於輸入新題目資料 #}
+    <form id="addTopicForm">
+        <div> {# 題幹輸入區域 #}
+            <label for="newTopicText">題目內容 (題幹):</label>
+            <textarea id="newTopicText" name="topicText" rows="3" required></textarea> {# required 屬性表示必填 #}
+        </div>
+
+        {# 選項輸入區域，使用網格佈局 #}
+        <div class="topic-options-grid">
+            <div> {# 選項 A 輸入框 #}
+                <label for="newTopicOptionA">選項 A:</label>
+                <input type="text" id="newTopicOptionA" name="optionA" required>
+            </div>
+            <div> {# 選項 B 輸入框 #}
+                <label for="newTopicOptionB">選項 B:</label>
+                <input type="text" id="newTopicOptionB" name="optionB" required>
+            </div>
+            <div> {# 選項 C 輸入框 #}
+                <label for="newTopicOptionC">選項 C:</label>
+                <input type="text" id="newTopicOptionC" name="optionC" required>
+            </div>
+            <div> {# 選項 D 輸入框 #}
+                <label for="newTopicOptionD">選項 D:</label>
+                <input type="text" id="newTopicOptionD" name="optionD" required>
+            </div>
+            <div> {# 選項 E 輸入框 (可選) #}
+                <label for="newTopicOptionE">選項 E (可選):</label> 
+                <input type="text" id="newTopicOptionE" name="optionE">
+            </div>
+        </div>
+
+        {# 正確答案選擇區域 #}
+        <div>
+            <label for="newTopicCorrectAnswer">正確答案是:</label>
+            <select id="newTopicCorrectAnswer" name="correctAnswer" required> {# 下拉選單選擇正確答案字母 #}
+                <option value="">請選擇...</option> {# 默認選項 #}
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+            </select>
+        </div>
+
+        <div class="dialog-actions"> {# 對話框底部操作按鈕區域 #}
+            {# 取消按鈕，使用 type="button" 避免觸發表單提交 #}
+            <button type="button" id="closeAddTopicDialogBtn">取消</button>
+            {# 提交按鈕，觸發表單的 submit 事件 #}
+            <button type="submit">儲存題目</button>
+        </div>
+    </form>
+</dialog>
+{# 新增題目對話框 HTML 結束 #}
+
+{# 練習題目 Modal 對話框 - START #}
+<dialog id="practiceQuestionModal"> 
+    <div class="modal-header"> {# Modal 頭部 #}
+        <div class="modal-header-left">
+            <h3 id="modalQuestionId">題目 ID: </h3>
+            <span class="modal-star" id="modalStar"><i class="fas fa-star"></i></span>
+        </div>
+        <button id="closePracticeModalBtn">&times;</button> {# 顯示叉號圖標 #}
+    </div>
+    <div class="modal-body"> {# Modal 主體 #}
+        {# 題目文字區域，內容由 JS 動態填充 #}
+        <div id="modalQuestionText"></div>
+        {# 選項列表區域，選項由 JS 動態生成和填充 #}
+        <div id="modalOptions">
+            {# Options will be dynamically loaded here #}
+        </div>
+        {# 回饋信息區域，如正確答案，由 JS 動態填充 #}
+        <div id="modalFeedback" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+    <div class="modal-footer"> {# Modal 底部，包含導航和答案按鈕 #}
+        {# 上一題按鈕，初始隱藏，由 JS 控制顯示 #}
+        <button id="prevQuestionBtn">上一題</button>
+        {# 顯示答案按鈕 #}
+        <button id="checkAnswerBtn">顯示答案</button>
+        {# 下一題按鈕，初始隱藏，由 JS 控制顯示 #}
+        <button id="nextQuestionBtn">下一題</button>
+    </div>
+</dialog>
+{# 練習題目 Modal 對話框 - END #}
+
+<script>
+    const allQuestions = {{ questions | tojson }};
+</script>
+<script src="{{url_for('static' , filename='js/chapter.js')}}"></script> 
+
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-section">
+    <h2>為您推薦的課程</h2>
+    <div class="cards-container">
+        <div class="course-card">
+            <img src="/static/resources/management_outlook.png" alt="課程圖片">
+            <div class="card-body">
+                <h3>管理學</h3>
+                <p class="subtitle">講師：Hsiao Chan</p>
+                <a class="learn-btn" href="sets">查看詳情</a>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="/static/resources/macroeconomy_outlook.jpg" alt="課程圖片">
+            <div class="card-body">
+                <h3>總體經濟學</h3>
+                <p class="subtitle">講師：Alex Huang</p>
+                <a class="learn-btn" href="sets">立即學習</a>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="/static/resources/databasesystem_outlook.jpg" alt="課程圖片">
+            <div class="card-body">
+                <h3>資料庫管理</h3>
+                <p class="subtitle">講師：林志偉老師</p>
+                <a class="learn-btn" href="sets">查看詳情</a>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="/static/resources/investment_outlook.jpg" alt="課程圖片">
+            <div class="card-body">
+                <h3>投資學</h3>
+                <p class="subtitle">講師：Hank Hsin Lee</p>
+                <a class="learn-btn" href="/sets">立即學習</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content-section premium-ad">
+    <div class="premium-ad-container">
+        <div class="premium-ad-text">
+            <h2>升級為 Premium</h2>
+            <p>解鎖更多功能，享受無廣告體驗，並獲得專屬課程內容！</p>
+            <button class="premium-btn" onclick="window.location.href='{{ url_for('upgrade') }}'">立即升級</button>
+        </div>
+        <div class="premium-ad-image">
+            <img src="/static/resources/redball.png" alt="Premium Ad">
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <h2>探索熱門類別</h2>
+    <div class="cards-container category-cards">
+        <div class="category-card">
+            <i class="fas fa-code"></i>
+            <h3>資料庫管理</h3>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-paint-brush"></i>
+            <h3>管理學</h3>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-chart-bar"></i>
+            <h3>總體經濟學</h3>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-language"></i>
+            <h3>越南文</h3>
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <h2>SMD捲捲薯條</h2>
+    <div class="performers-container">
+        <div class="performer-card">
+            <img src="https://i.postimg.cc/pXfy7zj8/user2.jpg" alt="User 1">
+            <div class="performer-info">
+                <h3>吳孟庭</h3>
+                <p>完成題數：231</p>
+            </div>
+        </div>
+        <div class="performer-card">
+            <img src="https://i.postimg.cc/prYhDFYD/user4.jpg" alt="User 2">
+            <div class="performer-info">
+                <h3>Karen Wu</h3>
+                <p>完成題數：150</p>
+            </div>
+        </div>
+        <div class="performer-card">
+            <img src="https://i.postimg.cc/mgqD1jfv/user1.jpg" alt="User 3">
+            <div class="performer-info">
+                <h3>Meng Ting Wu</h3>
+                <p>完成題數：120</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-logo">
+            <h3>SMD 學習平台</h3>
+        </div>
+        <div class="footer-links">
+            <a href="about-us">關於我們</a>
+            <a href="contact-us">聯絡我們</a>
+            <a href="/privacy">隱私政策</a>
+            <a href="/terms">使用條款</a>
+        </div>
+        <div class="footer-social">
+            <a href="hhttps://www.facebook.com/YangMingChiaoTung" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/lewiscapaldi?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://github.com/mingfujacky/Lecture-Database" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+</footer>
+{% endblock %}
