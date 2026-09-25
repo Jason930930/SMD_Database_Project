@@ -1,0 +1,20 @@
+# 機密：金鑰絕不能進映像檔
+backend/*.json
+**/firebase_config*.json
+.env
+
+# 開發用、與執行無關的檔案
+.git
+.gitignore
+.venv
+**/__pycache__
+crawler/
+docs/
+wordle_*/
+backend/t.py
+backend/參考
+README.md
+Dockerfile
+.dockerignore
+
+*firebase-adminsdk*.json
