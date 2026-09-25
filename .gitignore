@@ -1,3 +1,7 @@
 .venv
-backend/firebase_config.json
-backend/firebase_config2.json
+__pycache__/
+.env
+
+# Firebase 服務帳戶金鑰（機密）
+backend/firebase_config*.json
+*firebase-adminsdk*.json

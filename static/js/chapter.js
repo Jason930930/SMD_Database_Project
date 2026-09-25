@@ -784,13 +784,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
 
-                    fetch('/chapter', {
-                        // 直接 POST 到 /chapter，帶題目資料
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(allQuestions)
-                    })
-
                     // 重新排序與動畫
                     sortTable();
 
@@ -894,7 +887,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // This populates the table and also calls updateSortedQuestions internally.
     sortTable(); 
 
-    window.addEventListener('popstate', function(event) {
-        window.location.replace('/sets');
-    });
 });

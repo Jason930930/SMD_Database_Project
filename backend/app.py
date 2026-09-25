@@ -1,20 +1,42 @@
+import os
+import secrets
 from flask import Flask, render_template, send_file, url_for, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import firebase_admin
 from firebase_admin import credentials, firestore
 import bcrypt
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+IS_PRODUCTION = os.environ.get('APP_ENV') == 'production'
+
 # 登入資料庫
-try:
-    cred = credentials.Certificate('backend/firebase_config2.json')
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-except Exception as e:
-    print(f"Error initializing Firebase: {e}")
+# 有金鑰檔就用金鑰檔；部署在 Google Cloud 上時沒有金鑰檔，改用執行環境的服務帳戶（ADC）
+key_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') or os.path.join(BASE_DIR, 'firebase_config2.json')
+if os.path.exists(key_path):
+    firebase_admin.initialize_app(credentials.Certificate(key_path))
+else:
+    firebase_admin.initialize_app()
+db = firestore.client()
 
 
-app = Flask(__name__, static_folder='../static' , template_folder='../static/html')
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'), template_folder=os.path.join(PROJECT_ROOT, 'static', 'html'))
+
+secret_key = os.environ.get('SECRET_KEY')
+if not secret_key:
+    if IS_PRODUCTION:
+        raise RuntimeError('正式環境必須設定 SECRET_KEY 環境變數')
+    # 本機開發用隨機金鑰，重新啟動後需要重新登入
+    secret_key = secrets.token_hex(32)
+app.secret_key = secret_key
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=IS_PRODUCTION,
+    REMEMBER_COOKIE_HTTPONLY=True,
+    REMEMBER_COOKIE_SECURE=IS_PRODUCTION,
+)
 
 # 設定 Flask-Login
 login_manager = LoginManager()
@@ -42,7 +64,7 @@ def load_user(user_id):
 @app.route('/favicon.ico')
 def my_icon():
     try:
-        return send_file('../resources/icon.png', mimetype='image/png')
+        return send_file(os.path.join(PROJECT_ROOT, 'resources', 'icon.png'), mimetype='image/png')
     except FileNotFoundError:
         print("error")
         return "Icon not found", 404
@@ -61,8 +83,10 @@ def login():
             if bcrypt.checkpw(request.form.get('password').encode('utf-8'), user_data['password'].encode('utf-8')):
                 flask_user = User(result[0].id, user_data['email'], user_data['UserName'], user_data['img'])
                 login_user(flask_user)
-                if 'next' in request.args:
-                    return redirect(request.args.get('next'))
+                next_url = request.args.get('next', '')
+                # 只允許站內路徑，避免被當成跳轉到外部網站的跳板
+                if next_url.startswith('/') and not next_url.startswith('//'):
+                    return redirect(next_url)
                 else:   
                     return redirect(url_for('index'))
             else:
@@ -262,26 +286,15 @@ def sets():
             
     return render_template('sets.html', subjects=subjects_data)
 
-chapter_temp_mem = {}
-
-@app.route('/chapter', methods=['GET', 'POST'])
+@app.route('/chapter')
 @login_required
 def chapter():
-    if request.method == "POST":
-        datas = request.get_json()
-        global chapter_temp_mem
-        chapter_temp_mem = datas
-        return render_template('chapter.html', questions=datas, current_user_id=current_user.id)
-    else:
-        return render_template('chapter.html', questions=chapter_temp_mem, current_user_id=current_user.id)
-
-@app.route('/refresh_chapter_temp_mem', methods=['POST'])
-@login_required
-def refresh_chapter_temp_mem():
-    global chapter_temp_mem
-    datas = request.get_json()
-    chapter_temp_mem = datas
-    return jsonify({'success': True})
+    subject_id = request.args.get('subject_id')
+    unit_id = request.args.get('unit_id')
+    if not subject_id or not unit_id:
+        return redirect(url_for('sets'))
+    questions = load_unit(subject_id, unit_id)
+    return render_template('chapter.html', questions=questions, current_user_id=current_user.id)
 
 @app.route('/get_private')
 @login_required
@@ -331,6 +344,40 @@ def get_private():
             
     return render_template('sets.html', subjects=subjects_data)
 
+# 讀取單一章節的題目，並附上目前使用者的星號與作答歷程
+def load_unit(subject_id, unit_id):
+    data = {'subject_id': subject_id, 'unit_id': unit_id}
+    questions = []
+
+    question_docs = db.collection('SUBJECTS').document(subject_id).collection(unit_id).get()
+    if not question_docs:
+        question_docs = db.collection('USER').document(current_user.id).collection('SUBJECTS').document(subject_id).collection(unit_id).get()
+        
+    stars_docs = db.collection('USER').document(current_user.id).collection('STARS').document(subject_id).collection(unit_id).get()
+    stars_map = {doc.id: doc.to_dict() for doc in stars_docs}
+    hist_docs = db.collection('USER').document(current_user.id).collection('HIST').document(subject_id).collection(unit_id).get()
+    hist_map = {doc.id: doc.to_dict() for doc in hist_docs}
+    
+    for doc in question_docs:
+        if doc.id != 'meta':
+            question_data = doc.to_dict()
+            question_data['star'] = False
+            question_data['question_id'] = doc.id
+            question_data["hist"] = {"answer" : 0, "correct" : 0}
+            
+            if doc.id in stars_map:
+                if stars_map[doc.id]["star"]:
+                    question_data['star'] = True
+            if doc.id in hist_map:
+                question_data["hist"] = hist_map[doc.id]
+            questions.append(question_data)
+        else:
+            data['meta'] = doc.to_dict()        
+
+    data['has_data'] = bool(questions)
+    data['questions'] = questions
+    return data
+
 @app.route('/get_questions', methods=['POST'])
 @login_required
 def get_questions():
@@ -339,42 +386,11 @@ def get_questions():
 
     for i in range(len(datas)):
         data = datas[i]
-        subject_id = data.get('subject_id')
-        unit_id = data.get('unit_id')
-
-        questions = []
-
-        question_docs = db.collection('SUBJECTS').document(subject_id).collection(unit_id).get()
-        if not question_docs:
-            question_docs = db.collection('USER').document(current_user.id).collection('SUBJECTS').document(subject_id).collection(unit_id).get()
-            
-        stars_docs = db.collection('USER').document(current_user.id).collection('STARS').document(subject_id).collection(unit_id).get()
-        stars_map = {doc.id: doc.to_dict() for doc in stars_docs}
-        hist_docs = db.collection('USER').document(current_user.id).collection('HIST').document(subject_id).collection(unit_id).get()
-        hist_map = {doc.id: doc.to_dict() for doc in hist_docs}
-        
-        for doc in question_docs:
-            if doc.id != 'meta':
-                question_data = doc.to_dict()
-                question_data['star'] = False
-                question_data['question_id'] = doc.id
-                question_data["hist"] = {"answer" : 0, "correct" : 0}
-                
-                if doc.id in stars_map:
-                    if stars_map[doc.id]["star"]:
-                        question_data['star'] = True
-                if doc.id in hist_map:
-                    question_data["hist"] = hist_map[doc.id]
-                questions.append(question_data)
-            else:
-                datas[i]['meta'] = doc.to_dict()        
-
-        if not questions:
-            datas[i]['has_data'] = False
-            flash(f"在科目 {subject_id} 的單元 {unit_id} 中沒有找到題目。", 'warning')
-        else:
-            datas[i]['has_data'] = True
-            datas[i]['questions'] = questions
+        unit = load_unit(data.get('subject_id'), data.get('unit_id'))
+        data.update(unit)
+        if not unit['has_data']:
+            del data['questions']
+            flash(f"在科目 {unit['subject_id']} 的單元 {unit['unit_id']} 中沒有找到題目。", 'warning')
 
     return jsonify({'datas': datas})
 
@@ -388,14 +404,6 @@ def update_star():
     is_starred = data.get('is_starred') # (true/false)
     user_question_ref = db.collection('USER').document(current_user.id).collection('STARS').document(subject_id).collection(unit_id).document(question_id)
     user_question_ref.set({'star': is_starred}, merge=True)
-    
-    data = chapter_temp_mem
-    if data['subject_id'] == subject_id and data['unit_id'] == unit_id:
-        for question in data['questions']:
-            if question['question_id'] == question_id:
-                question['star'] = is_starred
-                break
-                
     return jsonify({'success': True})
 
 @app.route('/add_subject', methods=['POST'])
@@ -603,6 +611,6 @@ def choose_avatar():
 def wordle():
     return render_template('wordle.html')
 
-# Run
+# 本機開發用；正式環境由 gunicorn 啟動（見 Dockerfile）
 if __name__ == '__main__':
-    app.run(debug=True , host = "0.0.0.0", port=8787)
+    app.run(debug=not IS_PRODUCTION, host="0.0.0.0", port=int(os.environ.get('PORT', 8787)))

@@ -130,43 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subjectId = subjectSection.querySelector('.mock-exam-button').getAttribute('data-subject-id');
                 const unitId = this.querySelector('.unit-title').textContent.trim();
                 
-                // 先取得題目資料
-                fetch('/get_questions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        datas: [{
-                            subject_id: subjectId,
-                            unit_id: unitId
-                        }]
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    fetch('/chapter', {
-                        // 直接 POST 到 /chapter，帶題目資料
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            has_data : data.datas[0].has_data,
-                            meta : data.datas[0].meta,
-                            subject_id : subjectId,
-                            unit_id: unitId,
-                            questions: data.datas && data.datas[0] ? data.datas[0].questions : []
-                        })
-                    })
-                    .then(res => res.text())
-                    .then(html => {
-                        // 以新頁面方式顯示 chapter.html
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.pushState(null, '', '/chapter');
-                    })
-                })
-                .catch(() => {
-                    alert('取得題目失敗');
-                });
+                // 章節頁會依網址參數自行向伺服器讀取題目
+                const params = new URLSearchParams({ subject_id: subjectId, unit_id: unitId });
+                window.location.href = '/chapter?' + params.toString();
             }
 
             lastClickTime = now;
