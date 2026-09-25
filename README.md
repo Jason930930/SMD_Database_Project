@@ -34,6 +34,7 @@ SMD 是一套以 Flask 與 Firebase Firestore 打造的線上題庫與測驗平�
 ```
 SMD_Database_Project/
 ├── backend/
+│   ├── __init__.py             # 讓 gunicorn 能以 backend.app:app 載入
 │   ├── app.py                  # Flask 應用程式，所有路由與 Firestore 存取
 │   ├── t.py                    # 手動測試 Firestore 查詢的暫存腳本
 │   ├── 參考                     # 各 API 的前端呼叫範例
@@ -41,16 +42,20 @@ SMD_Database_Project/
 │   └── firebase_config2.json   # Firebase 服務帳戶金鑰（未納入版控）
 ├── crawler/
 │   ├── crawl_notion.py         # 解析 Notion 匯出的 HTML 並寫入 Firestore
+│   ├── seed_avatars.py         # 寫入頭像清單 USER/IMG
 │   └── ch*.html                # 各章節的題目原始檔
 ├── static/
 │   ├── html/                   # Jinja2 樣板，base.html 為共用外框
 │   ├── css/                    # 各頁面對應的樣式表
 │   ├── js/                     # 各頁面對應的前端邏輯
-│   ├── resources/              # 科目封面圖等前端圖片
+│   ├── resources/              # 科目封面圖、預設頭像（avatars/）等前端圖片
 │   └── sound/                  # 答對與答錯音效
 ├── resources/                  # 網站圖示與說明文件用圖
 ├── docs/
 │   └── README-original.md      # 專案最初版本的 README
+├── Dockerfile                  # 正式環境映像檔（gunicorn）
+├── .dockerignore
+├── .gcloudignore               # 防止金鑰被上傳到 Cloud Build
 ├── requirements.txt
 └── README.md
 ```
@@ -71,7 +76,21 @@ pip install beautifulsoup4
 
 ### 2. 放入 Firebase 金鑰
 
-`app.py` 會讀取 `backend/firebase_config2.json` 作為 Firebase 服務帳戶金鑰。這個檔案含有機密資訊，已被 `.gitignore` 排除，必須自行從 Firebase 主控台下載後放到該路徑。缺少金鑰時應用程式仍會啟動，但終端機會印出初始化錯誤，而且所有資料庫操作都會失敗。
+`app.py` 依下列順序尋找 Firebase 憑證：
+
+1. 環境變數 `GOOGLE_APPLICATION_CREDENTIALS` 指定的金鑰檔
+2. `backend/firebase_config2.json`
+3. 都沒有時改用執行環境的預設憑證（ADC），部署在 Cloud Run 時就是走這條路，不需要金鑰檔
+
+本機開發時從 Firebase 主控台下載服務帳戶金鑰放到 `backend/firebase_config2.json` 即可。這個檔案已被 `.gitignore` 與 `.dockerignore` 排除。找不到任何憑證時應用程式會直接啟動失敗。
+
+### 3. 環境變數
+
+| 變數 | 說明 |
+| --- | --- |
+| `SECRET_KEY` | Flask session 簽章金鑰。本機未設定時會隨機產生（重新啟動後需重新登入）；正式環境必填，可用 `python -c "import secrets;print(secrets.token_hex(32))"` 產生 |
+| `APP_ENV` | 設為 `production` 時要求 `SECRET_KEY`、關閉 debug，並讓 cookie 只透過 HTTPS 傳送。Docker 映像檔已預設為 `production` |
+| `PORT` | 監聽埠，本機預設 `8787`，容器內預設 `8080` |
 
 ## 啟動方式
 
@@ -79,9 +98,54 @@ pip install beautifulsoup4
 python backend/app.py
 ```
 
-請從專案根目錄執行，因為金鑰路徑與樣板路徑都是相對於根目錄。啟動後在終端機按住 `Ctrl` 並點擊網址即可開啟，預設監聽 `0.0.0.0:8787`，同網段的其他裝置也能連入。按 `Ctrl + C` 結束。
+啟動後在終端機按住 `Ctrl` 並點擊網址即可開啟，預設監聽 `0.0.0.0:8787`，同網段的其他裝置也能連入。按 `Ctrl + C` 結束。
 
 ![啟動畫面](resources/image.png)
+
+### 以 Docker 執行（與正式環境相同）
+
+正式環境使用 gunicorn 啟動，而非 Flask 內建的開發伺服器。
+
+```bash
+docker build -t smd .
+docker run --rm -p 8080:8080   -e SECRET_KEY=local-test   -e APP_ENV=development   -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/key.json   -v "$PWD/backend/firebase_config2.json:/secrets/key.json:ro"   smd
+```
+
+之後開啟 <http://localhost:8080>。本機是 HTTP，所以要加上 `APP_ENV=development`，否則瀏覽器不會送出只限 HTTPS 的登入 cookie。金鑰只在執行時掛載進容器，不會被打包進映像檔。
+
+## 部署（Google Cloud Run）
+
+正式站：<https://smd-997597242855.asia-east1.run.app>
+
+| 項目 | 設定 |
+| --- | --- |
+| GCP 專案 | `smd-project-8e531`（與 Firestore 同一個專案） |
+| 地區 | `asia-east1`，與 Firestore 相同 |
+| 執行身分 | `smd-run@smd-project-8e531.iam.gserviceaccount.com`，只有 Firestore 讀寫（`roles/datastore.user`）與讀取 `smd-secret-key` 的權限，不需要金鑰檔 |
+| `SECRET_KEY` | 存在 Secret Manager 的 `smd-secret-key`，部署時以 `--set-secrets` 注入 |
+| 規模 | 最少 0、最多 2 個執行個體，512 MiB 記憶體 |
+
+### 更新版本
+
+在本機建置映像檔、推送到 Artifact Registry，再部署到 Cloud Run：
+
+```bash
+IMG=asia-east1-docker.pkg.dev/smd-project-8e531/cloud-run-source-deploy/smd:$(date +%Y%m%d-%H%M%S)
+docker build --platform linux/amd64 -t $IMG .
+docker push $IMG
+gcloud run deploy smd --image $IMG --region asia-east1 --project smd-project-8e531
+```
+
+第一次推送前需執行一次 `gcloud auth configure-docker asia-east1-docker.pkg.dev`。其餘設定（服務帳戶、Secret、執行個體數量）會沿用上一個版本，不必重複指定。
+
+`gcloud run deploy --source .` 在這個專案目前會因為 Cloud Build 讀不到上傳的原始碼而失敗，所以改用本機建置。`.gcloudignore` 仍保留，確保若改用 `--source` 時金鑰不會被上傳。
+
+### 回復到上一版
+
+```bash
+gcloud run revisions list --service smd --region asia-east1 --project smd-project-8e531
+gcloud run services update-traffic smd --to-revisions <版本名稱>=100 --region asia-east1 --project smd-project-8e531
+```
 
 ## 資料模型
 
@@ -120,7 +184,7 @@ USER/{uid}/TEST_RECORDS/{record_id}                 # date, accuracy, num, quest
 | `/login`、`/register`、`/choose_avatar` | 登入、註冊、選擇頭像 | 否 |
 | `/about-us`、`/contact-us`、`/privacy`、`/terms` | 靜態頁面與聯絡表單 | 否 |
 | `/sets` | 題庫列表，合併顯示公開與私人科目 | 是 |
-| `/chapter` | 單一章節的題目瀏覽與編輯 | 是 |
+| `/chapter?subject_id=..&unit_id=..` | 單一章節的題目瀏覽與編輯 | 是 |
 | `/practice` | 練習模式 | 是 |
 | `/test_record` | 測驗紀錄列表 | 是 |
 | `/settings` | 個人資料、密碼、刪除帳號 | 是 |
@@ -144,29 +208,36 @@ USER/{uid}/TEST_RECORDS/{record_id}                 # date, accuracy, num, quest
 | `/add_test_record` | 保存一次測驗結果 |
 | `/get_test_record` | 取得所有測驗紀錄摘要 |
 | `/get_test_record_detail` | 依 `record_id` 取回該次測驗的完整題目 |
-| `/refresh_chapter_temp_mem` | 更新章節頁面的伺服器端暫存 |
 | `/get_img` | 取得可選頭像清單 |
 
 每個端點的請求與回應範例集中在 [backend/參考](backend/參考)，`/get_questions` 的完整回傳格式另外收錄在 [backend/返回的json的格式.json](backend/返回的json的格式.json)。
 
-## 題庫爬蟲
+## 題庫爬蟲與初始資料
 
-`crawler/crawl_notion.py` 會讀取同目錄下的 `ch{章節}.html`，用 BeautifulSoup 解析 Notion 的摺疊區塊，抽出題目、五個選項與答案，再寫入 Firestore。
+`crawler/crawl_notion.py` 會讀取同目錄下的 `ch{章節}.html`（Notion 匯出檔），抽出題目、選項與答案，寫入公開題庫。科目與章節的對應寫在檔案開頭的 `SUBJECT_CHAPTERS`：
 
-執行前需要留意三件事。腳本以相對路徑 `../backend/firebase_config2.json` 讀取金鑰，所以必須在 `crawler/` 目錄下執行。目標科目在程式中寫死為 `MACROECONOMICS`，換科目要直接改原始碼。檔案結尾的 `chapters` 清單被指派了兩次，實際只有第二次的值會生效。
+| 科目 | 章節 |
+| --- | --- |
+| `MANAGEMENT` | ch8、ch9、ch11、ch14、ch16、ch17、ch18 |
+| `MACROECONOMICS` | ch202201、ch202301、ch202302、ch202501 |
+
+`crawler/seed_avatars.py` 會把 `static/resources/avatars/` 內的圖片寫成頭像清單 `USER/IMG`，選頭像頁面需要它。
+
+建立新的 Firebase 專案後，依序執行以下指令即可建立初始資料（可從任何目錄執行）：
 
 ```bash
-cd crawler
-python crawl_notion.py
+pip install beautifulsoup4
+python crawler/crawl_notion.py            # 試跑，只顯示各章題數
+python crawler/crawl_notion.py --apply    # 寫入題庫
+python crawler/seed_avatars.py            # 寫入頭像清單
 ```
 
 ## 已知問題與後續工作
 
-- `chapter_temp_mem` 是模組層級的全域變數，所有使用者共用同一份暫存，多人同時操作會互相覆蓋。
-- `app.secret_key` 直接寫死在原始碼中，正式部署前應改為從環境變數讀取。
-- `app.run` 以 `debug=True` 啟動並綁定 `0.0.0.0`，僅適合開發環境使用。
+- JSON API 尚未加上 CSRF 防護，目前僅靠 `SameSite=Lax` cookie 降低風險。
 - 刪除帳號只移除 `USER` 的主文件，底下的子集合不會一併清除。
-- `crawler/` 需要的 `beautifulsoup4` 尚未加入 `requirements.txt`。
+- `crawler/` 需要的 `beautifulsoup4` 未列入 `requirements.txt`（正式環境用不到）。
+- 題庫爬蟲建立的章節沒有 `examtype`，題庫列表會顯示「無類型資訊」。
 - `wordle_尚未放入SMD/` 內的音效檔尚未整併進主專案。
 
 原始的功能待辦清單保留在 [docs/README-original.md](docs/README-original.md)。
