@@ -1,0 +1,29 @@
+# Firebase Hosting 設定（轉發規則、hosting/ 內的檔案）有變動時才部署
+name: Deploy Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'hosting/**'
+      - '.github/workflows/hosting.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/997597242855/locations/global/workloadIdentityPools/github/providers/github
+          service_account: smd-build@smd-project-8e531.iam.gserviceaccount.com
+
+      - name: Deploy
+        run: npx --yes firebase-tools@15 deploy --only hosting --project smd-project-8e531 --non-interactive

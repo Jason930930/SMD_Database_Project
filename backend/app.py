@@ -31,12 +31,31 @@ if not secret_key:
 app.secret_key = secret_key
 
 app.config.update(
+    # Firebase Hosting 轉發請求到 Cloud Run 時只保留名為 __session 的 cookie
+    SESSION_COOKIE_NAME='__session',
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=IS_PRODUCTION,
     REMEMBER_COOKIE_HTTPONLY=True,
     REMEMBER_COOKIE_SECURE=IS_PRODUCTION,
+    # 靜態檔案可由瀏覽器與 CDN 快取一天；網址帶版本號，部署新版時自動更新
+    SEND_FILE_MAX_AGE_DEFAULT=86400 if IS_PRODUCTION else None,
 )
+
+# 版本號：CI 部署時設定 APP_VERSION（git commit），否則使用 Cloud Run 自動提供的版本名稱
+STATIC_VERSION = os.environ.get('APP_VERSION') or os.environ.get('K_REVISION') or 'dev'
+
+@app.url_defaults
+def add_static_version(endpoint, values):
+    if endpoint == 'static' and 'v' not in values:
+        values['v'] = STATIC_VERSION
+
+@app.after_request
+def no_cdn_cache_for_pages(response):
+    # 頁面與 API 含有個人資料，明確禁止 CDN 快取
+    if request.endpoint != 'static':
+        response.headers.setdefault('Cache-Control', 'private, no-cache')
+    return response
 
 # 設定 Flask-Login
 login_manager = LoginManager()

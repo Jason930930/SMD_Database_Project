@@ -3,6 +3,8 @@
 SMD 是一套以 Flask 與 Firebase Firestore 打造的線上題庫與測驗平台，作為資料庫課程的期末專案。使用者可以註冊帳號、依科目與章節練習選擇題、把不熟的題目加星號、查看自己的作答歷程，並建立只屬於自己的私人題庫。
 
 > 專案最初版本的 README 已移至 [docs/README-original.md](docs/README-original.md)，其中包含當時的待辦清單與原始說明。
+>
+> 從本機開發、Docker 化到部署上線的完整流程與設計理由，請見 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
 
 ---
 
@@ -56,6 +58,10 @@ SMD_Database_Project/
 ├── Dockerfile                  # 正式環境映像檔（gunicorn）
 ├── .dockerignore
 ├── .gcloudignore               # 防止金鑰被上傳到 Cloud Build
+├── .github/workflows/          # CI/CD：deploy.yml（Cloud Run）、hosting.yml（Firebase Hosting）
+├── firebase.json               # Firebase Hosting：所有請求轉給 Cloud Run
+├── .firebaserc
+├── hosting/                    # Hosting 直接提供的檔案（目前只有 robots.txt）
 ├── requirements.txt
 └── README.md
 ```
@@ -91,6 +97,7 @@ pip install beautifulsoup4
 | `SECRET_KEY` | Flask session 簽章金鑰。本機未設定時會隨機產生（重新啟動後需重新登入）；正式環境必填，可用 `python -c "import secrets;print(secrets.token_hex(32))"` 產生 |
 | `APP_ENV` | 設為 `production` 時要求 `SECRET_KEY`、關閉 debug，並讓 cookie 只透過 HTTPS 傳送。Docker 映像檔已預設為 `production` |
 | `PORT` | 監聽埠，本機預設 `8787`，容器內預設 `8080` |
+| `APP_VERSION` | 靜態檔網址的版本號（`?v=`），讓 CDN 與瀏覽器在新版部署後取得新檔案。CI 會設為 commit 前 7 碼；未設定時使用 Cloud Run 的版本名稱 |
 
 ## 啟動方式
 
@@ -113,38 +120,60 @@ docker run --rm -p 8080:8080   -e SECRET_KEY=local-test   -e APP_ENV=development
 
 之後開啟 <http://localhost:8080>。本機是 HTTP，所以要加上 `APP_ENV=development`，否則瀏覽器不會送出只限 HTTPS 的登入 cookie。金鑰只在執行時掛載進容器，不會被打包進映像檔。
 
-## 部署（Google Cloud Run）
+## 部署（Firebase Hosting + Google Cloud Run）
 
-正式站：<https://smd-997597242855.asia-east1.run.app>
+正式站：<https://smd-project-8e531.web.app>（Cloud Run 原始網址 <https://smd-997597242855.asia-east1.run.app> 也可使用）
+
+完整流程與設計理由請見 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
 
 | 項目 | 設定 |
 | --- | --- |
 | GCP 專案 | `smd-project-8e531`（與 Firestore 同一個專案） |
-| 地區 | `asia-east1`，與 Firestore 相同 |
-| 執行身分 | `smd-run@smd-project-8e531.iam.gserviceaccount.com`，只有 Firestore 讀寫（`roles/datastore.user`）與讀取 `smd-secret-key` 的權限，不需要金鑰檔 |
-| `SECRET_KEY` | 存在 Secret Manager 的 `smd-secret-key`，部署時以 `--set-secrets` 注入 |
-| 規模 | 最少 0、最多 2 個執行個體，512 MiB 記憶體 |
+| 入口 | Firebase Hosting：CDN 快取 `/static/*`，其餘請求轉給 Cloud Run |
+| 應用程式 | Cloud Run 服務 `smd`，`asia-east1`，最少 0、最多 2 個執行個體 |
+| 執行身分 | `smd-run`，只有 Firestore 讀寫與讀取 `smd-secret-key` 的權限 |
+| `SECRET_KEY` | Secret Manager 的 `smd-secret-key` |
+| CI/CD | GitHub Actions，以 Workload Identity Federation 登入 `smd-build`，GitHub 上不存任何金鑰 |
+| 監控 | 5xx 錯誤警報、首頁可用性檢查，通知寄到專案擁有者信箱 |
+| 備份 | Firestore 每日備份（保留 7 天）、每週備份（保留 8 週）、PITR（7 天內任一分鐘） |
 
 ### 更新版本
 
-在本機建置映像檔、推送到 Artifact Registry，再部署到 Cloud Run：
+push 到 `main` 就會自動部署：
+
+| 變更的檔案 | 觸發的 workflow | 動作 |
+| --- | --- | --- |
+| 程式碼（文件、爬蟲、Hosting 設定除外） | [deploy.yml](.github/workflows/deploy.yml) | 建置映像檔 → 推送 → 部署 Cloud Run → 冒煙測試 |
+| `firebase.json`、`.firebaserc`、`hosting/` | [hosting.yml](.github/workflows/hosting.yml) | 部署 Firebase Hosting |
+| 開 pull request | deploy.yml 的 build job | 只建置映像檔，不部署 |
+
+兩個 workflow 也都能在 GitHub 的 Actions 頁面手動執行。需要從本機手動部署時：
 
 ```bash
-IMG=asia-east1-docker.pkg.dev/smd-project-8e531/cloud-run-source-deploy/smd:$(date +%Y%m%d-%H%M%S)
+IMG=asia-east1-docker.pkg.dev/smd-project-8e531/cloud-run-source-deploy/smd:manual-$(date +%Y%m%d-%H%M%S)
 docker build --platform linux/amd64 -t $IMG .
 docker push $IMG
 gcloud run deploy smd --image $IMG --region asia-east1 --project smd-project-8e531
 ```
-
-第一次推送前需執行一次 `gcloud auth configure-docker asia-east1-docker.pkg.dev`。其餘設定（服務帳戶、Secret、執行個體數量）會沿用上一個版本，不必重複指定。
-
-`gcloud run deploy --source .` 在這個專案目前會因為 Cloud Build 讀不到上傳的原始碼而失敗，所以改用本機建置。`.gcloudignore` 仍保留，確保若改用 `--source` 時金鑰不會被上傳。
 
 ### 回復到上一版
 
 ```bash
 gcloud run revisions list --service smd --region asia-east1 --project smd-project-8e531
 gcloud run services update-traffic smd --to-revisions <版本名稱>=100 --region asia-east1 --project smd-project-8e531
+```
+
+### 從備份還原 Firestore
+
+還原一律寫到**新的資料庫**，確認內容無誤後再決定如何切換，不會覆蓋現有資料：
+
+```bash
+# 列出備份
+gcloud firestore backups list --location asia-east1 --project smd-project-8e531
+# 從備份還原到新資料庫 restored
+gcloud firestore databases restore --source-backup=<備份名稱> --destination-database=restored --project smd-project-8e531
+# 或用 PITR 複製 7 天內某個時間點的資料
+gcloud firestore databases clone --source-database='projects/smd-project-8e531/databases/(default)' --snapshot-time=2026-09-26T10:00:00Z --destination-database=restored --project smd-project-8e531
 ```
 
 ## 資料模型

@@ -1,0 +1,85 @@
+# push 到 main：建置映像檔 → 推送到 Artifact Registry → 部署到 Cloud Run → 冒煙測試
+# Pull request：只建置映像檔，確認可以成功打包
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'crawler/**'
+      - 'hosting/**'
+      - 'firebase.json'
+      - '.firebaserc'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PROJECT_ID: smd-project-8e531
+  REGION: asia-east1
+  SERVICE: smd
+  IMAGE: asia-east1-docker.pkg.dev/smd-project-8e531/cloud-run-source-deploy/smd
+  WIF_PROVIDER: projects/997597242855/locations/global/workloadIdentityPools/github/providers/github
+  DEPLOY_SA: smd-build@smd-project-8e531.iam.gserviceaccount.com
+  SITE_URL: https://smd-project-8e531.web.app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Python syntax
+        run: python3 -m py_compile backend/app.py
+
+      - name: Build image
+        run: docker build -t smd .
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # 讓 GitHub 發 OIDC token 給 Workload Identity Federation
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Build and push image
+        run: |
+          gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
+          docker build -t "$IMAGE:$GITHUB_SHA" .
+          docker push "$IMAGE:$GITHUB_SHA"
+
+      # 服務帳戶、SECRET_KEY、執行個體數量沿用上一版設定；APP_VERSION 讓靜態檔網址帶上新版本號
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --image "$IMAGE:$GITHUB_SHA" \
+            --region "$REGION" \
+            --project "$PROJECT_ID" \
+            --update-env-vars "APP_VERSION=${GITHUB_SHA::7}" \
+            --quiet
+
+      - name: Smoke test
+        run: |
+          for path in / /login "/static/css/style.css?v=${GITHUB_SHA::7}"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors "$SITE_URL$path")
+            echo "$path -> $code"
+            test "$code" = 200
+          done

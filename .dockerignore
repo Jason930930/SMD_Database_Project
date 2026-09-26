@@ -18,3 +18,9 @@ Dockerfile
 .dockerignore
 
 *firebase-adminsdk*.json
+
+# Firebase Hosting 設定，與容器無關
+hosting/
+firebase.json
+.firebaserc
+.github/
