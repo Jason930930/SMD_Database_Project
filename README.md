@@ -199,7 +199,7 @@ USER/{uid}/HIST/{subject_id}/{unit_id}/{qid}        # { answer: int, correct: in
 USER/{uid}/TEST_RECORDS/{record_id}                 # date, accuracy, num, questions
 ```
 
-另有 `USER/IMG` 這份文件存放可選頭像清單，以及 `CONTACT_US` 集合存放聯絡表單的來信。
+另有 `USER/IMG` 這份文件存放可選頭像清單，以及 `CONTACT_US` 集合存放聯絡表單的來信。`LOGIN_ATTEMPTS/{email 的 SHA-256}` 記錄登入失敗次數（`count`、`window_start`、`expire_at`），供登入頻率限制使用，過期後由 Firestore TTL 自動刪除。
 
 讀取題目時，後端會先查公開題庫，找不到才改查該使用者的私人題庫，因此同名科目章節會以公開版本優先。
 
@@ -263,7 +263,6 @@ python crawler/seed_avatars.py            # 寫入頭像清單
 
 ## 已知問題與後續工作
 
-- JSON API 尚未加上 CSRF 防護，目前僅靠 `SameSite=Lax` cookie 降低風險。
 - 刪除帳號只移除 `USER` 的主文件，底下的子集合不會一併清除。
 - `crawler/` 需要的 `beautifulsoup4` 未列入 `requirements.txt`（正式環境用不到）。
 - 題庫爬蟲建立的章節沒有 `examtype`，題庫列表會顯示「無類型資訊」。

@@ -10,6 +10,7 @@
     <h2>選擇頭像</h2>
     <div id="avatar-list" style="display: flex; gap: 16px; flex-wrap: wrap;"></div>
     <form id="avatarForm" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="avatar" id="selectedAvatar">
         <button type="submit" class="register-button">完成</button>
     </form>

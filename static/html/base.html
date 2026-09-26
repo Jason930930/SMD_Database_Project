@@ -3,6 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        // 所有同站的非 GET fetch 自動帶上 CSRF token
+        (function () {
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            const originalFetch = window.fetch;
+            window.fetch = function (input, init) {
+                init = init || {};
+                const method = (init.method || 'GET').toUpperCase();
+                const url = new URL(typeof input === 'string' ? input : input.url, location.href);
+                if (method !== 'GET' && method !== 'HEAD' && url.origin === location.origin) {
+                    const headers = new Headers(init.headers || {});
+                    headers.set('X-CSRFToken', token);
+                    init = Object.assign({}, init, { headers: headers });
+                }
+                return originalFetch.call(this, input, init);
+            };
+        })();
+    </script>
     <title>{% block title %}SMD學習平台{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

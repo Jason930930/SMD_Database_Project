@@ -362,8 +362,47 @@ git 歷史中仍留有舊的寫死 `secret_key`，但正式站使用 Secret Mana
 
 ---
 
+## 應用程式層的安全防護
+
+### CSRF 防護
+
+CSRF（跨站請求偽造）是指惡意網站誘使已登入的使用者的瀏覽器，對本站送出請求，例如刪除帳號。使用 Flask-WTF 的 `CSRFProtect`，所有 POST 請求都必須帶上與登入狀態綁定的 token：
+
+| 請求類型 | token 放在哪裡 |
+| --- | --- |
+| HTML 表單（登入、註冊、設定、聯絡我們、選頭像） | 隱藏欄位 `csrf_token` |
+| 前端 `fetch` 呼叫的 JSON API | `base.html` 包裝了 `window.fetch`，同站的非 GET 請求自動加上 `X-CSRFToken` 標頭，各頁的 JS 不需要修改 |
+
+驗證失敗時，表單會導回原頁並顯示「頁面已過期」，JSON API 回傳 `400 {"error": "csrf"}`。
+
+兩個設定的理由：`WTF_CSRF_TIME_LIMIT=None` 讓 token 在整個登入期間有效，避免練習超過一小時後送出測驗紀錄失敗；`WTF_CSRF_SSL_STRICT=False` 是因為經由 Firebase Hosting 轉發時，瀏覽器的 Referer 網域與 Cloud Run 看到的網域不同，嚴格比對會誤擋，改由 token 本身把關。
+
+### 登入頻率限制
+
+同一個帳號在 15 分鐘內登入失敗 5 次，就暫停該帳號登入，直到 15 分鐘的計算區間結束；登入成功會清除紀錄。
+
+| 設計 | 理由 |
+| --- | --- |
+| 以帳號計數，而非 IP | 請求經過 Firebase Hosting 與 Google 前端兩層代理，`X-Forwarded-For` 最左邊的值可由用戶端偽造，以 IP 限制不可靠 |
+| 存在 Firestore 的 `LOGIN_ATTEMPTS` 集合 | Cloud Run 可能同時有多個執行個體，記憶體內計數無法共用，重啟也會歸零 |
+| 文件 ID 是 email 的 SHA-256 | 集合內不直接存放 email |
+| `expire_at` 欄位搭配 Firestore TTL 政策 | 過期紀錄由 Firestore 自動刪除 |
+
+取捨：攻擊者可以故意輸錯密碼，讓某個帳號暫時無法登入 15 分鐘。對課程專案來說，這比密碼被暴力破解的風險小。
+
+### 選頭像頁面的身分驗證
+
+原本註冊後導向 `/choose_avatar?user_id=<新帳號 ID>`，送出時直接修改網址指定的帳號，任何人只要知道別人的 user ID 就能改他的頭像，也能把頭像設成任意外部網址。
+
+現在的做法：
+
+- 註冊成功時把新帳號 ID 存在 session（`pending_avatar_uid`），網址不再帶 ID；網址上的 `user_id` 參數會被忽略。
+- 選頭像頁只修改 session 中的帳號；沒有待選頭像的帳號就導回登入頁。選完即從 session 移除，不能重複修改。
+- 送出的頭像必須是 `USER/IMG` 清單內的網址，拒絕外部圖片。
+
+---
+
 ## 還沒做的事
 
 - **自訂網域**：需要先購買網域，步驟見 ⑥。
-- **CSRF 防護**：JSON API 目前只靠 `SameSite=Lax` cookie。
-- **登入頻率限制**：尚未防範暴力嘗試密碼。
+- **註冊沒有頻率限制**：目前可以大量建立帳號。

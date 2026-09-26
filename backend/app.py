@@ -1,7 +1,10 @@
 import os
+import hashlib
 import secrets
-from flask import Flask, render_template, send_file, url_for, request, redirect, url_for, flash, jsonify
+from datetime import datetime, timedelta, timezone
+from flask import Flask, render_template, send_file, url_for, request, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_wtf.csrf import CSRFProtect, CSRFError
 import firebase_admin
 from firebase_admin import credentials, firestore
 import bcrypt
@@ -40,7 +43,21 @@ app.config.update(
     REMEMBER_COOKIE_SECURE=IS_PRODUCTION,
     # 靜態檔案可由瀏覽器與 CDN 快取一天；網址帶版本號，部署新版時自動更新
     SEND_FILE_MAX_AGE_DEFAULT=86400 if IS_PRODUCTION else None,
+    # CSRF token 在整個登入期間有效，避免長時間練習後送出測驗紀錄失敗
+    WTF_CSRF_TIME_LIMIT=None,
+    # 經由 Firebase Hosting 轉發時 Referer 與 Cloud Run 的網域不同，改以 token 本身驗證
+    WTF_CSRF_SSL_STRICT=False,
 )
+
+# 所有 POST 請求都必須帶 CSRF token：表單用隱藏欄位，fetch 由 base.html 自動加上 X-CSRFToken 標頭
+csrf = CSRFProtect(app)
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    if request.is_json:
+        return jsonify({'success': False, 'error': 'csrf'}), 400
+    flash('頁面已過期，請重新操作一次', 'warning')
+    return redirect(request.full_path if request.query_string else request.path)
 
 # 版本號：CI 部署時設定 APP_VERSION（git commit），否則使用 Cloud Run 自動提供的版本名稱
 STATIC_VERSION = os.environ.get('APP_VERSION') or os.environ.get('K_REVISION') or 'dev'
@@ -92,28 +109,60 @@ def my_icon():
 def index():
     return render_template('index.html')
 
+# 登入頻率限制：同一帳號在 LOGIN_WINDOW 內失敗 LOGIN_MAX_FAILURES 次後暫時鎖定
+# 以帳號計數並存在 Firestore，多個 Cloud Run 執行個體共用，也不受代理伺服器 IP 影響
+LOGIN_MAX_FAILURES = 5
+LOGIN_WINDOW = timedelta(minutes=15)
+
+def login_attempt_ref(email):
+    key = hashlib.sha256(email.strip().lower().encode('utf-8')).hexdigest()
+    return db.collection('LOGIN_ATTEMPTS').document(key)
+
+def login_locked_minutes(email):
+    data = login_attempt_ref(email).get().to_dict()
+    if not data or data['count'] < LOGIN_MAX_FAILURES:
+        return 0
+    remaining = data['window_start'] + LOGIN_WINDOW - datetime.now(timezone.utc)
+    return max(0, -(-int(remaining.total_seconds()) // 60))
+
+@firestore.transactional
+def _record_login_failure(transaction, ref):
+    now = datetime.now(timezone.utc)
+    data = ref.get(transaction=transaction).to_dict()
+    if not data or now - data['window_start'] > LOGIN_WINDOW:
+        data = {'count': 0, 'window_start': now}
+    # expire_at 供 Firestore TTL 政策自動清除過期紀錄
+    transaction.set(ref, {'count': data['count'] + 1, 'window_start': data['window_start'], 'expire_at': now + LOGIN_WINDOW})
+
+def record_login_failure(email):
+    _record_login_failure(db.transaction(), login_attempt_ref(email))
+
 # 驗證使用者
 @app.route('/login' , methods=['GET', 'POST'])    
 def login():
     if request.method == 'POST':
-        result = db.collection("USER").where("email", "==", request.form.get('email')).get()
-        if len(result):
-            user_data = db.collection('USER').document(result[0].id).get().to_dict()
-            if bcrypt.checkpw(request.form.get('password').encode('utf-8'), user_data['password'].encode('utf-8')):
-                flask_user = User(result[0].id, user_data['email'], user_data['UserName'], user_data['img'])
-                login_user(flask_user)
-                next_url = request.args.get('next', '')
-                # 只允許站內路徑，避免被當成跳轉到外部網站的跳板
-                if next_url.startswith('/') and not next_url.startswith('//'):
-                    return redirect(next_url)
-                else:   
-                    return redirect(url_for('index'))
-            else:
-                flash('帳號或密碼錯誤', 'danger')
-                return redirect(url_for('login'))
-        else:
+        email = request.form.get('email', '')
+        locked = login_locked_minutes(email)
+        if locked:
+            flash(f'登入失敗次數過多，請 {locked} 分鐘後再試', 'danger')
+            return redirect(url_for('login', next=request.args.get('next')))
+
+        result = db.collection("USER").where("email", "==", email).get()
+        user_data = db.collection('USER').document(result[0].id).get().to_dict() if len(result) else None
+        if user_data is None or not bcrypt.checkpw(request.form.get('password', '').encode('utf-8'), user_data['password'].encode('utf-8')):
+            record_login_failure(email)
             flash('帳號或密碼錯誤', 'danger')
-            return redirect(url_for('login'))
+            return redirect(url_for('login', next=request.args.get('next')))
+
+        login_attempt_ref(email).delete()
+        flask_user = User(result[0].id, user_data['email'], user_data['UserName'], user_data['img'])
+        login_user(flask_user)
+        next_url = request.args.get('next', '')
+        # 只允許站內路徑，避免被當成跳轉到外部網站的跳板
+        if next_url.startswith('/') and not next_url.startswith('//'):
+            return redirect(next_url)
+        else:
+            return redirect(url_for('index'))
     else:
         return render_template('login.html')
 
@@ -183,9 +232,9 @@ def register():
                 "img" : request.form.get('avatar') 
             })
             # return redirect(url_for('login'))
-            user_id = user_ref[1].id  # Firestore add() 回傳 (ref, doc)
-            # 註冊成功後導向選頭像頁
-            return redirect(url_for('choose_avatar', user_id=user_id))
+            # 註冊成功後導向選頭像頁；新帳號 ID 存在 session，不放在網址上，避免被拿來修改別人的頭像
+            session['pending_avatar_uid'] = user_ref[1].id  # Firestore add() 回傳 (ref, doc)
+            return redirect(url_for('choose_avatar'))
     else:
         return render_template('register.html')
     
@@ -614,11 +663,16 @@ def get_img():
 
 @app.route('/choose_avatar', methods=['GET', 'POST'])
 def choose_avatar():
-    user_id = request.args.get('user_id')
+    # 只能設定這個瀏覽器剛註冊的帳號
+    user_id = session.get('pending_avatar_uid')
+    if not user_id:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         avatar = request.form.get('avatar')
-        if user_id and avatar:
+        allowed = (db.collection('USER').document('IMG').get().to_dict() or {}).get('urls', [])
+        if avatar in allowed:
             db.collection("USER").document(user_id).update({"img": avatar})
+            session.pop('pending_avatar_uid', None)
             flash('註冊完成！', 'success')
             return redirect(url_for('login'))
         else:

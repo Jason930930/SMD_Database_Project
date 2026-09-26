@@ -19,6 +19,7 @@
                 {% else %}
                     <form action="{{ url_for('login') }}" method="POST">
                 {% endif %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         <label for="email">電子郵件 / 帳號</label>
                          <input type="text" id="email" name="email" required>
